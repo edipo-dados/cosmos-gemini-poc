@@ -1,0 +1,11 @@
+.env
+.vendor/
+.venv/
+__pycache__/
+*.pyc
+*.duckdb
+*.duckdb.wal
+.pytest_cache/
+pgdata/
+.agents/
+.DS_Store
