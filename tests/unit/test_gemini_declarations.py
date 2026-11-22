@@ -49,7 +49,7 @@ def test_sdk_serializes_declarations_on_the_wire():
     resp = client.generate([types.Content(role="user", parts=[types.Part.from_text(text="Qual o faturamento?")])])
     assert resp.text == "ok"
     body = fake.requests[0]
-    assert fake.urls[0].endswith("/models/modelo-x:generateContent")
+    assert fake.urls[0].endswith("/v1beta/models/modelo-x:generateContent")
     assert fake.api_keys[0] == "chave-falsa-de-teste"
     sent = [f["name"] for f in body["tools"][0]["functionDeclarations"]]
     assert sent == list(TOOL_NAMES)

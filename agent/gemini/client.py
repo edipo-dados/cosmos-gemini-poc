@@ -23,15 +23,15 @@ BLOCK_FINISH = {types.FinishReason.SAFETY, types.FinishReason.PROHIBITED_CONTENT
 class LLMClient(Protocol):
     model: str
 
-    def generate(self, contents: list[types.Content]) -> types.GenerateContentResponse: ...
+    def generate(self, contents: list[types.Content], force_tool: bool = False) -> types.GenerateContentResponse: ...
 
 
-def build_config() -> types.GenerateContentConfig:
+def build_config(mode: types.FunctionCallingConfigMode = types.FunctionCallingConfigMode.AUTO) -> types.GenerateContentConfig:
     return types.GenerateContentConfig(
         system_instruction=SYSTEM_INSTRUCTION,
         temperature=0,
         tools=build_tools(),
-        tool_config=types.ToolConfig(function_calling_config=types.FunctionCallingConfig(mode=types.FunctionCallingConfigMode.AUTO)),
+        tool_config=types.ToolConfig(function_calling_config=types.FunctionCallingConfig(mode=mode)),
         automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
     )
 
@@ -53,12 +53,17 @@ class GeminiClient:
         self.model = model
         self._sleep = sleep
         self._config = build_config()
+        self._forced_config = build_config(types.FunctionCallingConfigMode.ANY)
+        # O SDK usa a API `v1` por padrão, que rejeita function calling (HTTP 400); é preciso `v1beta`.
+        http_options = (http_options or types.HttpOptions()).model_copy(update={"api_version": "v1beta"})
         self._client = genai.Client(api_key=api_key, http_options=http_options)
 
-    def generate(self, contents: list[types.Content]) -> types.GenerateContentResponse:
+    def generate(self, contents: list[types.Content], force_tool: bool = False) -> types.GenerateContentResponse:
+        """`force_tool=True` usa o modo ANY: o modelo precisa chamar uma ferramenta (sem isso ele chegou a inventar números)."""
+        config = self._forced_config if force_tool else self._config
         for attempt in range(len(RETRY_DELAYS) + 1):
             try:
-                return self._client.models.generate_content(model=self.model, contents=contents, config=self._config)
+                return self._client.models.generate_content(model=self.model, contents=contents, config=config)
             except Exception as exc:  # noqa: BLE001 - tudo é mapeado para um erro estável
                 if is_retryable(exc) and attempt < len(RETRY_DELAYS):
                     log.warning("Gemini indisponível (tentativa %d); nova tentativa em %.0f s", attempt + 1, RETRY_DELAYS[attempt])

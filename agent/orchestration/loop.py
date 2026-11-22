@@ -80,7 +80,7 @@ class ChatOrchestrator:
         queries: list[dict] = []
         rounds = 0
         while True:
-            response = self.llm.generate(contents)
+            response = self.llm.generate(contents, force_tool=rounds == 0)  # 1ª rodada: obriga a consultar ferramentas
             if is_blocked(response):
                 return "blocked", BLOCKED_MESSAGE, calls, queries
             cand = (response.candidates or [None])[0]
