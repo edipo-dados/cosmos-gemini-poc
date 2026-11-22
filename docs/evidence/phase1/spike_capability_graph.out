@@ -1,0 +1,5 @@
+validate_graph errors: []
+tool:list_metrics -> ('ALLOWED', {'metrics': ['net_revenue']})
+tool:query_metric -> ('DENIED', 'AuthorizationBlocked', 'effect not authorized: deny: no_applicable_allow')
+tool:list_metrics again (2nd attempt, same episode) -> ('ALLOWED', {'metrics': ['net_revenue']})
+final episode state: completed

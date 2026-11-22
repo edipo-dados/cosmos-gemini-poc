@@ -1,0 +1,11 @@
+{
+  "case_ids": [
+    "tmp-7fdlhqfuoz-first-inspection"
+  ],
+  "edge_count": 3,
+  "environment_id": "cosmos:environment:developer:tmp-7fdlhqfuoz",
+  "environment_kind": "developer",
+  "node_count": 7,
+  "resource_count": 1,
+  "valid": true
+}

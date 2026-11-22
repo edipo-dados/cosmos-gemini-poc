@@ -1,0 +1,30 @@
+validate_graph errors: []
+
+== Achado 1: handoff por query_id ==
+ok: ok {'query_id': '456316d6-1d61-41a4-80b2-fd8d9d6c4a1b', 'row_count': 3, 'status': 'ok'} | counts {'decision': 1, 'adapter_result': 1} | PENDING vazio: True
+unknown_metric: rejected unknown_metric {'query_id': '01354765-f112-416f-9a30-73946d7972df', 'row_count': 0, 'status': 'rejected'} | counts {'decision': 1, 'adapter_result': 1}
+engine calls (so a valida): 1
+pending ausente -> AdapterBoundaryError | resumo ausente para query_id=inexistente
+
+== Achado 2: ordem validacao x autorizacao ==
+campo extra: rejected invalid_arguments | cosmos_decision_id = None | episodio aberto: None
+sem capacidade: rejected tool_not_authorized | engine calls ainda: 1
+
+== Achado 3: SemanticReader / tool_explain ==
+explain net_revenue: chaves ['incoming_edges', 'neighbours', 'node', 'outgoing_edges'] | 'error' in res: False
+tool_explain com id ausente (retorno normal, sem excecao): {'error': 'unknown id: x'}
+adaptador converte erro -> internal_error: divergencia YAML x grafo (unknown id: cosmos:01a05cd7-2a00-7060-8d...)
+SemanticReader ausente         -> semantic_catalog_unavailable (graph ilegivel: FileNotFoundError)
+SemanticReader ilegivel        -> semantic_catalog_unavailable (graph ilegivel: JSONDecodeError)
+SemanticReader vazio           -> semantic_catalog_unavailable (graph sem nos poc.metric)
+SemanticReader sem poc.metric  -> semantic_catalog_unavailable (graph sem nos poc.metric)
+load_graph() do Cosmos com JSON quebrado e COSMOS_GRAPH explicito -> [] (engole o erro; por isso o SemanticReader nao o usa)
+subprocesso (cwd=world, COSMOS_GRAPH explicito): {"count": 1, "path": "/var/folders/9d/9y0qg6sx3vzd8wkd6tj_cwsr0000gn/T/tmp0uubftbl/.cosmos/graph.json"} 
+
+== Rodada 4, achado 1: falha de formato e sempre invalid_arguments (esquema, antes do gateway) ==
+show_sql query_id='abc'      -> {'status': 'rejected', 'error_code': 'invalid_arguments', 'cosmos_decision_id': None}
+search_concepts query=''     -> {'status': 'rejected', 'error_code': 'invalid_arguments', 'cosmos_decision_id': None}
+query_metric metric='X-1'    -> {'status': 'rejected', 'error_code': 'invalid_arguments', 'cosmos_decision_id': None}
+unknown_metric (dominio): unknown_metric {'decision': 1, 'adapter_result': 1}
+
+OK

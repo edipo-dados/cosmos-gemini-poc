@@ -1,0 +1,3 @@
+ALLOWED : ('decision', 'allow', {'metrics': ['net_revenue'], 'args': {'q': 'x'}})
+DENIED  : ('blocked', 'AuthorizationBlocked', 'effect not authorized: deny: no_applicable_allow')
+[["runtime.adapter.result", 1], ["runtime.authorization.decision", 2], ["runtime.episode.created", 1], ["runtime.task.intake", 1]]
