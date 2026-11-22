@@ -1,12 +1,12 @@
 # Implementation Plan (Fases 2 a 6)
 
-Base: `docs/TASK.md` (seção 14 e 12 critérios de aceite), `docs/ARCHITECTURE.md` (decisões aprovadas, não reabrir), `docs/ENV_CHECK.md`, `docs/COSMOS_DISCOVERY.md`.
+Base: `docs/history/TASK.md` (seção 14 e 12 critérios de aceite), `docs/ARCHITECTURE.md` (decisões aprovadas, não reabrir), `docs/history/ENV_CHECK.md`, `docs/history/COSMOS_DISCOVERY.md`.
 
 ## 0. Convenções válidas para todas as fases
 
 - Python: `/Users/edipo/projetos/poc-cosmos/.venv/bin/python` (3.11.18). Comandos abaixo usam `PY=.venv/bin/python`. Sem Docker: PostgreSQL 16.2 real via `scripts/pg_local.py start|stop` (pgserver, TCP porta 54329, dados em `pgdata/`, ignorado pelo git). Nunca mockar Postgres, DuckDB ou Cosmos nos testes de aceite.
 - Código e identificadores em inglês; docs e README em pt-BR. Segredos só por env. `.env`, `pgdata/`, `logs/`, `*.duckdb`, `.cosmos/`, `cosmos.environment.json`, `.githooks/` vão no `.gitignore` (acrescentar o que faltar na fase que o cria). `.agents/` já está ignorado: não forçar `git add -f`.
-- Cada fase termina com: suíte da fase verde, saída colada em `docs/PHASE_REPORTS.md` (comando, saída, critérios fechados, itens NÃO verificados) e commit local `feat(phaseN): ...`. Nunca `git push`.
+- Cada fase termina com: suíte da fase verde, saída colada em `docs/history/PHASE_REPORTS.md` (comando, saída, critérios fechados, itens NÃO verificados) e commit local `feat(phaseN): ...`. Nunca `git push`.
 - Os nomes `tools/` e `runtime/` não podem existir na raiz (ocupados pelo `cosmos-platform`); `agent/tools` é seguro. Teste `tests/unit/test_no_toplevel_name_clash.py` (Fase 2).
 - Config central: `app/config.py` (pydantic-settings) lê `PG_HOST/PORT`, `PG_*_PASSWORD` (admin, loader, reader, dq, app), `DUCKDB_PATH`, `DQ_LAB_DUCKDB_PATH`, `SEED` (42), `DATA_END_DATE` (2026-10-31), `COSMOS_WORLD_DIR`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `API_URL`. `.env.example` com placeholders. Filtro de logging `app/logging_setup.py` redige chave e senhas.
 - Marcadores pytest em `pytest.ini`: `live_gemini` (skip sem chave), `slow`. `tests/conftest.py` fornece fixtures de sessão: `pg_server` (sobe pgserver, aplica migrações, gera dados, roda ETL em diretório temporário, uma vez por sessão) e `duckdb_path`. Testes de integração usam esses bancos reais; testes rápidos de unidade não precisam deles.
@@ -66,7 +66,7 @@ tests/{conftest.py,unit,integration,security,golden}
 - [ ] 2.5 Qualidade e reconciliação (depende de 2.4; 2.4 importa a função de verificação, então implementar `pipelines/quality/runner.py` e as regras antes de ligar o abort do ETL). Regras em `pipelines/quality/rules/*.sql` (1 arquivo por regra, retorna as linhas violadoras): `orders_without_customer`, `items_without_product`, `duplicate_payments`, `cancelled_with_captured_payment`, `refund_exceeds_paid`, `negative_values`, `inconsistent_dates`. `pipelines/quality/reference_sql/*.sql` (8 arquivos, um por métrica, escritos à mão contra `oltp`, independentes do Query Engine). `reconcile.py` compara valor de referência (PostgreSQL) com valor lido de `analytics.duckdb`: tolerância 0 para dinheiro e contagens, 1e-9 para razões; defeito de divergência demonstrado com `dq_lab.duckdb` (arquivo à parte, nunca aberto pela API). Resultados em `ops.dq_run`/`ops.dq_result` via `poc_dq`. CLI: `python -m pipelines.quality.run`.
   Verify: `PY -m pipelines.quality.run` (0 violações em `oltp`, contagens do manifesto em `dq_lab`, 8/8 reconciliadas); `PY -m pytest tests/integration/test_quality.py tests/integration/test_isolation.py -q`: contagem por regra em `dq_lab` = `tests/golden/dq_expected.json`; `oltp` = 0; contagem das métricas em `analytics.duckdb` não muda depois de recarregar `dq_lab`; divergência `dq_lab` x `dq_lab.duckdb` é detectada.
 
-- [ ] 2.6 Fechar a fase. Criar `Makefile` (`make pg-start migrate load etl quality test`), `scripts/bootstrap.sh` parcial (sem Cosmos ainda: só instalação), e `docs/PHASE_REPORTS.md` seção Fase 2 com saídas reais.
+- [ ] 2.6 Fechar a fase. Criar `Makefile` (`make pg-start migrate load etl quality test`), `scripts/bootstrap.sh` parcial (sem Cosmos ainda: só instalação), e `docs/history/PHASE_REPORTS.md` seção Fase 2 com saídas reais.
   Verify: `PY -m pytest tests/unit tests/integration tests/security -q` verde; pipeline completo do zero (`pg_local stop`, apagar `pgdata/` e `analytics.duckdb`, rodar `make` alvos em ordem) funciona.
 
 **Fecha:** critérios 1, 2, 3. **Não verificado:** Docker (compose escrito só na Fase 5).
@@ -207,7 +207,7 @@ tests/frontend/{test_pages_apptest.py,test_formatting.py}
 - [ ] 6.5 Teste do README (critério 12). Em clone limpo (`git clone` do repositório local para diretório temporário, sem `.venv`, `pgdata`, `.vendor`, `*.duckdb`), seguir **literalmente** os comandos do README sem Docker até API e Streamlit respondendo (`/health`, `/_stcore/health`, uma chamada `/tools/query_metric`). Corrigir o README onde o passo falhar. Se o clone limpo não for possível por rede (clone do Cosmos), registrar a limitação exata.
   Verify: saídas dos comandos coladas no relatório; todos os processos encerrados.
 
-- [ ] 6.6 Relatório de aceite `docs/ACCEPTANCE_REPORT.md` (pt-BR): tabela dos 12 critérios com status `VERIFICADO POR EXECUÇÃO`, `PARCIAL` ou `NÃO VERIFICADO`, comando, saída resumida e caminho da evidência em `docs/evidence/`. Declarar honestamente: critérios 5 e 6 não verificados ao vivo (sem chave; o que foi provado até a fronteira), Docker/compose não executados, admissão oficial do Cosmos contornada, `gemini-2.5-flash` não validado, captura de tela se não houve navegador. Atualizar `PHASE_REPORTS.md` com a fase 6.
+- [ ] 6.6 Relatório de aceite `docs/history/ACCEPTANCE_REPORT.md` (pt-BR): tabela dos 12 critérios com status `VERIFICADO POR EXECUÇÃO`, `PARCIAL` ou `NÃO VERIFICADO`, comando, saída resumida e caminho da evidência em `docs/evidence/`. Declarar honestamente: critérios 5 e 6 não verificados ao vivo (sem chave; o que foi provado até a fronteira), Docker/compose não executados, admissão oficial do Cosmos contornada, `gemini-2.5-flash` não validado, captura de tela se não houve navegador. Atualizar `PHASE_REPORTS.md` com a fase 6.
   Verify: cada linha "VERIFICADO" aponta para comando reexecutável; `PY -m pytest -q -m "not live_gemini"` verde na última linha do relatório.
 
 **Fecha:** 11, 12; consolida 1 a 10.

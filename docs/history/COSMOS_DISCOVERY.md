@@ -1,6 +1,6 @@
 # Descoberta do Cosmos (Fase 1)
 
-Data da execução: ambiente descrito em `docs/ENV_CHECK.md` (macOS arm64, Python 3.11.18 em `.venv`, Docker ausente, `GEMINI_API_KEY` ausente).
+Data da execução: ambiente descrito em `docs/history/ENV_CHECK.md` (macOS arm64, Python 3.11.18 em `.venv`, Docker ausente, `GEMINI_API_KEY` ausente).
 
 Repositório lido: `https://github.com/cosmos-semantic/cosmos`, clonado em `.vendor/cosmos` (pasta ignorada pelo git do projeto).
 Commit: `464175f6bfa641c30f0b2cdeb0ef84269fd202cb` (`v1.6.0-preview-1-g464175f`). `pyproject.toml`: `cosmos-platform 1.6.0.dev1`, `requires-python >=3.10`, dependência única `jsonschema>=4.0.0`.
@@ -102,7 +102,7 @@ Installed 7 packages
  + typing-extensions==4.16.0
 ```
 
-O instalador `curl ... | sh` e `pip install cosmos-platform` (PyPI) **não foram executados**. A versão publicada no PyPI não foi verificada. O pin do projeto usa o commit do GitHub (ver `ARCHITECTURE.md`, seção 12).
+O instalador `curl ... | sh` e `pip install cosmos-platform` (PyPI) **não foram executados**. A versão publicada no PyPI não foi verificada. O pin do projeto usa o commit do GitHub (ver `../ARCHITECTURE.md`, seção 12).
 
 ### 5.3 `cosmos init`
 
@@ -256,7 +256,7 @@ DENIED  : ('blocked', 'AuthorizationBlocked', 'effect not authorized: deny: no_a
 
 Conclusões (PROVEN): o `AuthorizationGateway` nega por padrão uma ferramenta sem capacidade; a ferramenta concedida roda via `ToolAdapter`; cada decisão e cada resultado viram eventos duráveis no SQLite do Cosmos. Cuidados:
 
-- `ToolAdapter._record` aplica `_safe_value` (`runtime/cosmos_runtime/effects.py:58`), que trunca **somente `str`** acima de 2048 caracteres. Um `dict` devolvido pelo handler é gravado inteiro no evento `runtime.adapter.result` em `.cosmos/runtime.sqlite3`. Por isso o handler do projeto devolve apenas um resumo compacto (`query_id`, `row_count`, `status`). O Cosmos não é o repositório de evidências completas; a tabela de auditoria no PostgreSQL (ver `ARCHITECTURE.md`) guarda o resultado completo.
+- `ToolAdapter._record` aplica `_safe_value` (`runtime/cosmos_runtime/effects.py:58`), que trunca **somente `str`** acima de 2048 caracteres. Um `dict` devolvido pelo handler é gravado inteiro no evento `runtime.adapter.result` em `.cosmos/runtime.sqlite3`. Por isso o handler do projeto devolve apenas um resumo compacto (`query_id`, `row_count`, `status`). O Cosmos não é o repositório de evidências completas; a tabela de auditoria no PostgreSQL (ver `../ARCHITECTURE.md`) guarda o resultado completo.
 - Esses nomes (`build_services`, `AuthorizationGateway`, `ToolAdapter`, ...) vêm do código e de `runtime/README.md`, mas o produto se declara "Developer Preview". Não há garantia de estabilidade. O pin por commit mitiga.
 - Este spike (`scripts/spikes/spike_tool_gateway.py`) usa `state` montado em memória com `resources` como strings, formato do gateway. O nó `capability` do grafo foi tratado no experimento 5.10.
 - `transition_episode` (usado para chegar a `READY`) é método do `SQLiteRuntimeStore`, usado nos testes do Cosmos (`runtime/tests/test_sandbox_adapters.py:47`) e **não** documentado em `runtime/README.md`. É API interna.
@@ -306,7 +306,7 @@ Saída gravada em `docs/evidence/phase1/spike_capability_graph.out`.
 | 20 | Cosmos Studio, Observatory, Control Center (interfaces web) | DOCUMENTED-ONLY | `docs/QUICKSTART.md`; `docs/OPERATOR-GUIDE.md`. Não iniciados |
 | 21 | Execução de processos arbitrários isolados | DOCUMENTED-ONLY, indisponível no macOS | `runtime/README.md` ("Process isolation requirement": só Bubblewrap em Linux) |
 | 22 | Cosmos Delta (`cosmos delta`, `report`) | DOCUMENTED-ONLY | `docs/QUICKSTART.md` §5 |
-| 23 | Execução de SQL ou consulta analítica | UNPROVEN (ausência: `grep -rliE "postgres|duckdb|psycopg|sqlalchemy" runtime docs README.md tools pyproject.toml` só acha `docs/SYSTEM-BOUNDARY.md:246` (decisão adiada) e `docs/versions/COSMOS-2.0.md` (texto sobre substituição de tecnologia); `runtime/` só usa `sqlite3` para o próprio estado; `ExternalSystemAdapter` não tem driver) | Nenhum documento lido descreve consulta a bancos. `ExternalSystemAdapter` (`runtime/cosmos_runtime/effects.py:334`, lido; não executado) é um registro de handlers por `(action, resource_ref)` com `AuthorizedEffect`, sem driver de banco. O projeto usa `ToolAdapter` (`effects.py:302`) por exigir a ação `tool.invoke` (ver `ARCHITECTURE.md` §5.3) |
+| 23 | Execução de SQL ou consulta analítica | UNPROVEN (ausência: `grep -rliE "postgres|duckdb|psycopg|sqlalchemy" runtime docs README.md tools pyproject.toml` só acha `docs/SYSTEM-BOUNDARY.md:246` (decisão adiada) e `docs/versions/COSMOS-2.0.md` (texto sobre substituição de tecnologia); `runtime/` só usa `sqlite3` para o próprio estado; `ExternalSystemAdapter` não tem driver) | Nenhum documento lido descreve consulta a bancos. `ExternalSystemAdapter` (`runtime/cosmos_runtime/effects.py:334`, lido; não executado) é um registro de handlers por `(action, resource_ref)` com `AuthorizedEffect`, sem driver de banco. O projeto usa `ToolAdapter` (`effects.py:302`) por exigir a ação `tool.invoke` (ver `../ARCHITECTURE.md` §5.3) |
 | 24 | Contêiner Docker oficial / serviço de rede do Cosmos | UNPROVEN (ausência: `find . -iname 'Dockerfile*' -o -iname 'docker-compose*'` vazio) | Sem `Dockerfile` ou compose no repositório (busca vazia) |
 | 25 | Daemon contínuo | DOCUMENTED-ONLY como PENDING | `docs/CAPABILITIES.md` §7 |
 
@@ -314,7 +314,7 @@ Saída gravada em `docs/evidence/phase1/spike_capability_graph.out`.
 
 1. O Cosmos é a camada de **memória semântica, política e proveniência** do agente. Ele não executa consultas, não tem catálogo de métricas e não calcula nada.
 2. Duas integrações reais e comprovadas: (a) **grafo** (`.cosmos/graph.json`) com métricas, dimensões, regras e glossário, validado pelo esquema do Cosmos e lido pelo servidor MCP; (b) **governança de ferramentas** (`ToolAdapter` + `AuthorizationGateway`) com decisões e resultados persistidos no SQLite do Cosmos.
-3. Os componentes adicionais necessários estão em `ARCHITECTURE.md`: Query Engine em DuckDB, adaptador de ferramentas, cliente Gemini com function calling, pipelines, tabela de auditoria e isolamento de qualidade.
+3. Os componentes adicionais necessários estão em `../ARCHITECTURE.md`: Query Engine em DuckDB, adaptador de ferramentas, cliente Gemini com function calling, pipelines, tabela de auditoria e isolamento de qualidade.
 4. A busca por sinônimos em português não existe no MCP do Cosmos. A ferramenta `search_concepts` precisa de um adaptador que leia o mesmo `graph.json` e compare `aliases`.
 
 ## 8. Riscos e perguntas em aberto
@@ -322,7 +322,7 @@ Saída gravada em `docs/evidence/phase1/spike_capability_graph.out`.
 - A API de runtime é de um produto em "Developer Preview"; pin por commit e testes de contrato (um teste do projeto roda o spike 5.9) detectam quebras.
 - Formato do `ExternalLocator` em `resources` de capability: resolvido. A definição (`system` e `uri` obrigatórios; `external_id`, `revision`, `display` opcionais) foi lida em `spec/ontology/IDENTITY-AND-REFERENCES.md` e o nó com esse formato foi validado (5.10).
 - `transition_episode` é API interna do runtime (5.9). Coberta por teste de contrato do projeto (`tests/integration/test_cosmos_contract.py`).
-- `cosmos init` dentro de contêiner (sem `.git`) falha (5.3). O design usa um volume com World próprio (`ARCHITECTURE.md` §11), **não verificado** por falta de Docker.
+- `cosmos init` dentro de contêiner (sem `.git`) falha (5.3). O design usa um volume com World próprio (`../ARCHITECTURE.md` §11), **não verificado** por falta de Docker.
 - O sync grava conhecimento já `active`. Se o projeto quiser o fluxo `candidate` → `validated` → `active`, isso exige estudar `runtime/candidate/admission_gate.py`. Fica fora do escopo do POC e declarado no README.
 - O `frozen_core_intact: false` e o `doctor` em FAIL são esperados nesta instalação; não indicam defeito do projeto.
 

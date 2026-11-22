@@ -1,6 +1,6 @@
 """Sincroniza o catálogo semântico versionado (YAML) com o World do Cosmos.
 
-Mecanismo usado (PROVEN, ver docs/COSMOS_DISCOVERY.md 5.6 e 5.10): escrita de registros no `.cosmos/graph.json`,
+Mecanismo usado (PROVEN, ver docs/history/COSMOS_DISCOVERY.md 5.6 e 5.10): escrita de registros no `.cosmos/graph.json`,
 validados por `tools.validate_ontology.validate_graph` do próprio Cosmos antes da gravação.
 NÃO usa o fluxo oficial de admissão de conhecimento (Candidate Intake, DOCUMENTED-ONLY): grava conhecimento já `active`.
 

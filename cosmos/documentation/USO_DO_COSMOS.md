@@ -1,6 +1,6 @@
 # Uso do Cosmos neste projeto (Fase 3)
 
-Este documento descreve o que o projeto grava no Cosmos, como isso se relaciona com o catálogo YAML e o que foi ou não comprovado por execução. Versão do Cosmos: commit `464175f6bfa641c30f0b2cdeb0ef84269fd202cb` (`v1.6.0-preview`). Detalhes da descoberta em `docs/COSMOS_DISCOVERY.md`.
+Este documento descreve o que o projeto grava no Cosmos, como isso se relaciona com o catálogo YAML e o que foi ou não comprovado por execução. Versão do Cosmos: commit `464175f6bfa641c30f0b2cdeb0ef84269fd202cb` (`v1.6.0-preview`). Detalhes da descoberta em `docs/history/COSMOS_DISCOVERY.md`.
 
 ## Relação entre o catálogo YAML e o Cosmos
 
@@ -32,7 +32,7 @@ Regras do sync:
 
 ## Comprovado por execução nesta fase
 
-Cada linha tem teste automatizado em `tests/integration/test_cosmos_sync.py` ou comando em `docs/PHASE_REPORTS.md` (Fase 3).
+Cada linha tem teste automatizado em `tests/integration/test_cosmos_sync.py` ou comando em `docs/history/PHASE_REPORTS.md` (Fase 3).
 
 | Afirmação | Rótulo |
 |---|---|

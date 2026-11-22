@@ -1,6 +1,6 @@
 # Arquitetura de integração: Cosmos + Gemini + PostgreSQL + DuckDB
 
-Este documento fixa as decisões da Fase 1. Ele depende de `docs/COSMOS_DISCOVERY.md` (fatos sobre o Cosmos, com rótulos PROVEN, DOCUMENTED-ONLY e UNPROVEN) e de `docs/ENV_CHECK.md` (ambiente). A pilha tecnológica da seção 12 fica travada em famílias após a aprovação; números de versão são provisórios (ver seção 12).
+Este documento fixa as decisões da Fase 1. Ele depende de `docs/history/COSMOS_DISCOVERY.md` (fatos sobre o Cosmos, com rótulos PROVEN, DOCUMENTED-ONLY e UNPROVEN) e de `docs/history/ENV_CHECK.md` (ambiente). A pilha tecnológica da seção 12 fica travada em famílias após a aprovação; números de versão são provisórios (ver seção 12).
 
 ## 1. Visão geral
 
@@ -23,7 +23,7 @@ PostgreSQL oltp ──ETL──> analytics.duckdb           (só schema oltp; dq
 
 ## 2. Papel do Cosmos e componentes adicionais
 
-O Cosmos **não é** uma camada semântica SQL (ver `COSMOS_DISCOVERY.md`, seções 2 e 6, itens 23 e 24). Ele não tem catálogo de métricas, não gera SQL e não tem conector de banco documentado ou presente no código lido. O único ponto de extensão para operações externas é um registro genérico de handlers (`ToolAdapter` e `ExternalSystemAdapter`, `runtime/cosmos_runtime/effects.py:302` e `:334`), sem driver de banco. No POC ele faz três coisas comprovadas:
+O Cosmos **não é** uma camada semântica SQL (ver `history/COSMOS_DISCOVERY.md`, seções 2 e 6, itens 23 e 24). Ele não tem catálogo de métricas, não gera SQL e não tem conector de banco documentado ou presente no código lido. O único ponto de extensão para operações externas é um registro genérico de handlers (`ToolAdapter` e `ExternalSystemAdapter`, `runtime/cosmos_runtime/effects.py:302` e `:334`), sem driver de banco. No POC ele faz três coisas comprovadas:
 
 1. **Guarda o conhecimento semântico** (métricas, dimensões, regras de negócio, glossário com sinônimos, versão e responsável) como nós e arestas validados pelo esquema do Cosmos em `.cosmos/graph.json`. O servidor MCP somente leitura do Cosmos e o nosso `SemanticReader` leem esse mesmo arquivo.
 2. **Governa as ferramentas do agente**: cada chamada de ferramenta é um `AttemptedEffect` com ação `tool.invoke` e `resource_ref` `tool:<nome>`. Sem capacidade concedida, o gateway nega por padrão. A capacidade existe como nó `capability` no grafo (formato da seção 5.2) e o projeto a converte para o formato de estado que o gateway consome (seção 5.3).
@@ -45,7 +45,7 @@ Componentes que o Cosmos não oferece e que o projeto implementa:
 
 ## 3. Capacidades comprovadas e não comprovadas
 
-Citações são caminhos dentro de `.vendor/cosmos/`. Detalhes e saídas em `COSMOS_DISCOVERY.md`, seção 5.
+Citações são caminhos dentro de `.vendor/cosmos/`. Detalhes e saídas em `history/COSMOS_DISCOVERY.md`, seção 5.
 
 | Capacidade do Cosmos | Rótulo | Citação | Uso no projeto |
 |---|---|---|---|
@@ -332,7 +332,7 @@ Invariante: dados com inconsistências nunca alimentam métricas oficiais.
 
 ## 11. Plano do Docker Compose
 
-`docs/ENV_CHECK.md` informa que `docker` e `docker compose` **não estão disponíveis** e o daemon está indisponível. Decisão: escrever `docker-compose.yml` e os `Dockerfile`s, **sem poder verificá-los por execução**. O caminho verificado é a execução local com PostgreSQL 16.2 real do `pgserver` (`scripts/pg_local.py start|stop`, porta 54329, dados em `pgdata/`). O relatório final declara isso.
+`docs/history/ENV_CHECK.md` informa que `docker` e `docker compose` **não estão disponíveis** e o daemon está indisponível. Decisão: escrever `docker-compose.yml` e os `Dockerfile`s, **sem poder verificá-los por execução**. O caminho verificado é a execução local com PostgreSQL 16.2 real do `pgserver` (`scripts/pg_local.py start|stop`, porta 54329, dados em `pgdata/`). O relatório final declara isso.
 
 Serviços:
 
@@ -353,7 +353,7 @@ A imagem do app instala o Cosmos clonando o commit fixado em `/opt/cosmos` e exe
 
 Travadas em famílias principais: Python 3.11, PostgreSQL 16, FastAPI, DuckDB, google-genai, Streamlit, SQLAlchemy 2. Os números de versão da lista abaixo são provisórios até o congelamento da Fase 2 (`uv pip compile`); só `pydantic==2.14.4` foi instalado e verificado no `.venv` (spike de handoff). Python 3.11 (`.venv` já criado com CPython 3.11.18 via `uv`), Google Gemini via `google-genai`, Cosmos (commit `464175f6bfa641c30f0b2cdeb0ef84269fd202cb`, `cosmos-platform 1.6.0.dev1`), PostgreSQL 16, DuckDB, FastAPI com uvicorn, Streamlit com Plotly, SQLAlchemy 2 com psycopg 3, pandas, Faker (`pt_BR`), pytest, Docker Compose (escrito, não verificado).
 
-Plano de dependências. As versões abaixo resultam de `uv pip compile --python-version 3.11` feito nesta fase. Nenhuma foi instalada ainda, com exceção das que já estão no `.venv` (`pgserver 0.1.4`, `jsonschema 4.26.0`, Cosmos). A Fase 2 instala, roda a suíte e congela com `uv pip compile`; se alguma versão falhar a instalação, a Fase 2 registra a troca em `docs/PHASE_REPORTS.md`.
+Plano de dependências. As versões abaixo resultam de `uv pip compile --python-version 3.11` feito nesta fase. Nenhuma foi instalada ainda, com exceção das que já estão no `.venv` (`pgserver 0.1.4`, `jsonschema 4.26.0`, Cosmos). A Fase 2 instala, roda a suíte e congela com `uv pip compile`; se alguma versão falhar a instalação, a Fase 2 registra a troca em `docs/history/PHASE_REPORTS.md`.
 
 ```text
 google-genai==3.6.1
@@ -397,7 +397,7 @@ scripts/{bootstrap.sh,pg_local.py,compute_golden.py,cosmos_world_init.sh}
 scripts/spikes/{spike_capability_graph.py,spike_tool_gateway.py,spike_toolexecutor_handoff.py,proto_sync.py}   # evidência repetível da Fase 1
 docs/evidence/phase1/              # saídas dos spikes e de `cosmos validate`
 tests/{unit,integration,golden,security}/
-docs/{TASK.md,ENV_CHECK.md,COSMOS_DISCOVERY.md,ARCHITECTURE.md,PHASE_REPORTS.md}
+docs/ARCHITECTURE.md   docs/history/{TASK,ENV_CHECK,COSMOS_DISCOVERY,PHASE_REPORTS,IMPLEMENTATION_PLAN,ACCEPTANCE_REPORT}.md
 docker-compose.yml  Dockerfile  requirements.txt  .env.example  README.md  Makefile
 ```
 
@@ -407,9 +407,9 @@ No contêiner o World fica em `/world` (seção 11). `cosmos.environment.json`, 
 
 ## 14. Plano de entrega em fases e validação
 
-Cada fase termina com os comandos abaixo executados e as saídas coladas em `docs/PHASE_REPORTS.md`. Fase não está concluída porque arquivos existem.
+Cada fase termina com os comandos abaixo executados e as saídas coladas em `docs/history/PHASE_REPORTS.md`. Fase não está concluída porque arquivos existem.
 
-**Fase 1: Discovery (esta).** Validação: `docs/COSMOS_DISCOVERY.md` e este arquivo existem; `.vendor/cosmos` está no commit `464175f`; `.venv/bin/cosmos validate` roda em repositório descartável e retorna `valid: true`; `.venv/bin/python scripts/spikes/spike_capability_graph.py` imprime `validate_graph errors: []`, `ALLOWED` para `tool:list_metrics`, `DENIED` para `tool:query_metric` e `final episode state: completed` (saída já gravada em `docs/evidence/phase1/spike_capability_graph.out`); `scripts/spikes/spike_tool_gateway.py` e `proto_sync.py` reproduzem os experimentos 5.9 e 5.6 (saídas em `docs/evidence/phase1/`); `.venv/bin/python scripts/spikes/spike_toolexecutor_handoff.py` termina com `OK` e reproduz `docs/evidence/phase1/spike_toolexecutor_handoff.out` (handoff por `query_id`, ordem esquema → autorização → domínio, `SemanticReader`, classificação esquema x domínio).
+**Fase 1: Discovery (esta).** Validação: `docs/history/COSMOS_DISCOVERY.md` e este arquivo existem; `.vendor/cosmos` está no commit `464175f`; `.venv/bin/cosmos validate` roda em repositório descartável e retorna `valid: true`; `.venv/bin/python scripts/spikes/spike_capability_graph.py` imprime `validate_graph errors: []`, `ALLOWED` para `tool:list_metrics`, `DENIED` para `tool:query_metric` e `final episode state: completed` (saída já gravada em `docs/evidence/phase1/spike_capability_graph.out`); `scripts/spikes/spike_tool_gateway.py` e `proto_sync.py` reproduzem os experimentos 5.9 e 5.6 (saídas em `docs/evidence/phase1/`); `.venv/bin/python scripts/spikes/spike_toolexecutor_handoff.py` termina com `OK` e reproduz `docs/evidence/phase1/spike_toolexecutor_handoff.out` (handoff por `query_id`, ordem esquema → autorização → domínio, `SemanticReader`, classificação esquema x domínio).
 
 **Fase 2: Data Foundation.**
 1. `scripts/bootstrap.sh` e `uv pip install -r requirements.txt`.
@@ -424,7 +424,7 @@ Cada fase termina com os comandos abaixo executados e as saídas coladas em `doc
 1. Transformar o spike da Fase 1 em `tests/integration/test_cosmos_contract.py`: provider lendo os nós `capability` do grafo real, sequência completa da seção 5.3 (intake, `READY`, tentativas, `COMPLETED` e `FAILED`), negação por nó removido.
 2. `cosmos init` na raiz do projeto, remoção de `.githooks/`.
 3. YAML das 8 métricas, 9 dimensões, regras e glossário; `python semantic/sync_to_cosmos.py`; `.venv/bin/cosmos validate .` com `valid: true`.
-4. Query Engine e SQL de referência. `pytest tests/unit/test_query_engine.py tests/integration/test_cosmos_sync.py tests/integration/test_cosmos_contract.py tests/security`. Casos: SQL injection em filtros, dimensão não autorizada, métrica inexistente, limite, timeout (consulta artificialmente longa, por exemplo `range(1e10)`, para provar `connection.interrupt()` em conexão `read_only` do DuckDB; se falhar, registrar em `PHASE_REPORTS.md` e trocar o mecanismo), `active_customers` com `date_to` e com `date_from`, `monthly_revenue_growth` com janela de datas, `order_by` e `limit`, e a matriz da seção 6 contra o YAML.
+4. Query Engine e SQL de referência. `pytest tests/unit/test_query_engine.py tests/integration/test_cosmos_sync.py tests/integration/test_cosmos_contract.py tests/security`. Casos: SQL injection em filtros, dimensão não autorizada, métrica inexistente, limite, timeout (consulta artificialmente longa, por exemplo `range(1e10)`, para provar `connection.interrupt()` em conexão `read_only` do DuckDB; se falhar, registrar em `history/PHASE_REPORTS.md` e trocar o mecanismo), `active_customers` com `date_to` e com `date_from`, `monthly_revenue_growth` com janela de datas, `order_by` e `limit`, e a matriz da seção 6 contra o YAML.
 5. Os testes de contrato do Cosmos executam o servidor MCP em subprocesso e a sequência de autorização. `test_cosmos_contract.py` inclui: chamar a mesma ferramenta duas vezes com os mesmos argumentos e esperar duas decisões `allow` em dois episódios distintos; `intake_objective` com `created=False` tratado como erro; `/health` respondendo durante uma consulta lenta; `POST /tools/{name}` com cada código de erro da seção 6.1 devolvendo o status esperado; transição de `chat_turn` `started` → final; o handoff por `query_id` e a ordem esquema → autorização → domínio (seção 5.3, passo 3); `semantic_catalog_unavailable` com grafo ausente, ilegível e sem `poc.metric`; `explain_metric` com ID ausente no grafo devolvendo `internal_error`. Nota: `cosmos-platform` foi instalado e testado em Python 3.11 (15 testes do próprio Cosmos), embora a documentação do Cosmos cite 3.12.
 
 **Fase 4: Gemini Integration.**
@@ -518,4 +518,4 @@ Itens "não verificados" do relatório de revisão: `connection.interrupt()` no 
 |---|---|---|---|
 | 1 | MEDIUM | Corrigido e provado. Regra única em 6.1: falha de esquema (tipo, campo extra, tamanho, UUID, regex de `metric`) é sempre `invalid_arguments` (400), antes do gateway, sem `new_attempt` e com `cosmos_decision_id` nulo. `invalid_query` e `invalid_query_id` removidos. `unknown_metric` (422) só vale para formato válido e ausente do catálogo, depois do `allow`. `query_not_found` e `no_sql_available` seguem como domínio. Lista de `rejected` e testes de contrato ajustados. Spike: `query_id="abc"`, `query=""` e `metric="X-1"` geram `invalid_arguments` sem evento Cosmos; `unknown_metric` gera 1 decisão e 1 `adapter.result` | 6.1, 5.3 passo 3; `docs/evidence/phase1/spike_toolexecutor_handoff.out` |
 | 2 | NIT | Corrigido. `spike_toolexecutor_handoff.py` entra na lista de §13 e na validação da Fase 1 (§14), com saída esperada `OK` e caminho da evidência | 13, 14 |
-| 3 | NIT | Aceito sem mudança de design. O spike usa Query Engine stub e o grafo do sync real não foi lido. Ação: o relatório da Fase 3 em `docs/PHASE_REPORTS.md` deve marcar "comportamento do `SemanticReader` e de `explain_metric` sobre o grafo do sync real" como verificado ou não verificado, com a saída de `test_cosmos_sync.py` e `test_cosmos_contract.py` | 5.5, 14 |
+| 3 | NIT | Aceito sem mudança de design. O spike usa Query Engine stub e o grafo do sync real não foi lido. Ação: o relatório da Fase 3 em `docs/history/PHASE_REPORTS.md` deve marcar "comportamento do `SemanticReader` e de `explain_metric` sobre o grafo do sync real" como verificado ou não verificado, com a saída de `test_cosmos_sync.py` e `test_cosmos_contract.py` | 5.5, 14 |

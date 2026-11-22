@@ -16,3 +16,10 @@ logs/
 .cosmos/
 cosmos.environment.json
 .githooks/
+venv/
+.venv/
+*.log
+*.sqlite
+*.sqlite3
+.ruff_cache/
+.mypy_cache/

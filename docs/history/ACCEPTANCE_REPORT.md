@@ -4,7 +4,7 @@ Execução em 2026-11-22, macOS arm64, Python 3.11.18, `.venv` do projeto, Postg
 
 ## Estado limpo
 
-Antes da execução, `pgdata/`, `analytics.duckdb`, `dq_lab.duckdb`, `logs/`, `.cosmos/` e `cosmos.environment.json` foram movidos para `/tmp/poc-backup-1795368000` (não apagados). O PostgreSQL foi parado antes. O `.env` foi mantido. Comandos completos em `docs/PHASE_REPORTS.md`, seção "Fase 6".
+Antes da execução, `pgdata/`, `analytics.duckdb`, `dq_lab.duckdb`, `logs/`, `.cosmos/` e `cosmos.environment.json` foram movidos para `/tmp/poc-backup-1795368000` (não apagados). O PostgreSQL foi parado antes. O `.env` foi mantido. Comandos completos em `docs/history/PHASE_REPORTS.md`, seção "Fase 6".
 
 ## Resumo
 
@@ -23,7 +23,7 @@ Antes da execução, `pgdata/`, `analytics.duckdb`, `dq_lab.duckdb`, `logs/`, `.
 | 11 | Testes automatizados passando | verificado por execução (suíte padrão 271 passed; ao vivo 13/14 na última rodada) |
 | 12 | Aplicação inicia seguindo o README | verificado por execução, parcial: sem Docker e sem clone limpo |
 
-Atualização de 2026-11-22: os critérios 5, 6 e 7 foram verificados com o Gemini real (`gemini-2.5-flash`, chave do `.env`, valor não exibido), após as correções do commit `a97afee`. Comandos e saídas em `docs/PHASE_REPORTS.md`, seção "Verificação ao vivo do Gemini". O restante deste relatório descreve a execução da Fase 6, feita sem chave.
+Atualização de 2026-11-22: os critérios 5, 6 e 7 foram verificados com o Gemini real (`gemini-2.5-flash`, chave do `.env`, valor não exibido), após as correções do commit `a97afee`. Comandos e saídas em `docs/history/PHASE_REPORTS.md`, seção "Verificação ao vivo do Gemini". O restante deste relatório descreve a execução da Fase 6, feita sem chave.
 
 ## Evidências por critério
 

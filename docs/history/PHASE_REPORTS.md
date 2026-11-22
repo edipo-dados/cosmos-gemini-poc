@@ -373,7 +373,7 @@ Nada foi commitado, conforme instrução.
 ## Fase 6: Validação, README e relatório de aceite
 ### O que foi feito
 - `README.md` em pt-BR (visão geral, arquitetura e relação Cosmos/Gemini/bancos, configuração, execução com e sem Docker, ETL/API/UI/testes, perguntas de exemplo, limitações).
-- `docs/ACCEPTANCE_REPORT.md` com os 12 critérios, cada um como "verificado por execução" (comando e trecho de saída) ou "não verificado" (motivo).
+- `docs/history/ACCEPTANCE_REPORT.md` com os 12 critérios, cada um como "verificado por execução" (comando e trecho de saída) ou "não verificado" (motivo).
 - Nenhum código de produto mudou. Nada foi commitado, conforme instrução.
 ### Comandos executados (todos com `GEMINI_API_KEY=` vazia; o valor do ambiente não foi usado)
 ```
@@ -405,7 +405,7 @@ $ grep -c AIza logs/*.log                          # 0 ocorrências
 ```
 Servidores encerrados ao final. O PostgreSQL local ficou ligado.
 ### Não verificado
-Gemini real, Docker/Compose, interface em navegador, instalação em clone limpo. Detalhes e motivos em `docs/ACCEPTANCE_REPORT.md`.
+Gemini real, Docker/Compose, interface em navegador, instalação em clone limpo. Detalhes e motivos em `docs/history/ACCEPTANCE_REPORT.md`.
 ## Verificação ao vivo do Gemini
 Execução em 2026-11-22 com o Gemini real. `GEMINI_API_KEY` estava definida (valor não exibido, carregado do `.env` com `set -a; . ./.env; set +a`), com `GEMINI_MODEL=gemini-2.5-flash`. O PostgreSQL local já estava populado (`etl_run_id` 1, `catalog_version` 54c809efd410). O serviço não devolveu nenhum 402 ou 429 nesta sessão.
 ### Defeitos encontrados e corrigidos (commit `a97afee`)

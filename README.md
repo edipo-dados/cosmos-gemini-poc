@@ -2,7 +2,7 @@
 
 Plataforma de analytics em linguagem natural. O usuário pergunta em português, o Gemini escolhe ferramentas governadas, o Query Engine monta SQL controlado sobre o DuckDB e a resposta volta com número, SQL, regras de negócio e evidências. O Cosmos Semantic guarda o catálogo semântico, as capacidades e a trilha de decisões.
 
-> **Estado da verificação.** Tudo o que não depende de Docker ou de chave do Gemini foi executado de verdade (ver `docs/ACCEPTANCE_REPORT.md`). **Chamadas ao Gemini real e o Docker Compose não foram verificados**, porque o ambiente de desenvolvimento não tinha chave nem Docker. O código dessas partes existe e é testado até a fronteira (SDK real com transporte roteirizado; análise estática do Compose).
+> **Estado da verificação.** Tudo o que não depende de Docker ou de chave do Gemini foi executado de verdade (ver `docs/history/ACCEPTANCE_REPORT.md`). **Chamadas ao Gemini real e o Docker Compose não foram verificados**, porque o ambiente de desenvolvimento não tinha chave nem Docker. O código dessas partes existe e é testado até a fronteira (SDK real com transporte roteirizado; análise estática do Compose).
 
 ## 1. Visão geral
 
@@ -37,7 +37,7 @@ PostgreSQL (OLTP) ─ETL─► DuckDB ─ reconciliação e regras de qualidade 
 - **Bancos:** o PostgreSQL é a origem; o DuckDB é o único banco consultado pelas métricas. Papéis de PostgreSQL separados (admin, loader, reader, dq, app) com permissões mínimas.
 - **Dados com inconsistências controladas** ficam isolados em `dq_lab.duckdb` e no esquema `dq_lab` do PostgreSQL. Nunca entram nas métricas oficiais.
 
-Documentos de apoio: `docs/ARCHITECTURE.md` (decisões e tabela de capacidades do Cosmos comprovadas e não comprovadas), `docs/COSMOS_DISCOVERY.md`, `cosmos/documentation/USO_DO_COSMOS.md`, `docs/PHASE_REPORTS.md`, `docs/ACCEPTANCE_REPORT.md`.
+Documentos de apoio: `docs/ARCHITECTURE.md` (decisões e tabela de capacidades do Cosmos comprovadas e não comprovadas), `docs/history/COSMOS_DISCOVERY.md`, `cosmos/documentation/USO_DO_COSMOS.md`, `docs/history/PHASE_REPORTS.md`, `docs/history/ACCEPTANCE_REPORT.md`.
 
 ## 3. Pré-requisitos
 
