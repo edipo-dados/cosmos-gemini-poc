@@ -370,3 +370,39 @@ Home.py exceptions: 0 ... pages/1..5: exceptions: 0 (Assistente com aviso de cha
 - Docker e compose (acima). A API em contêiner reinicia (`on-failure`) até o `init` criar World e DuckDB.
 - Uso: `cp .env.example .env`, `docker compose up -d postgres`, `docker compose run --rm init`, `docker compose up -d api frontend`.
 Nada foi commitado, conforme instrução.
+## Fase 6: Validação, README e relatório de aceite
+### O que foi feito
+- `README.md` em pt-BR (visão geral, arquitetura e relação Cosmos/Gemini/bancos, configuração, execução com e sem Docker, ETL/API/UI/testes, perguntas de exemplo, limitações).
+- `docs/ACCEPTANCE_REPORT.md` com os 12 critérios, cada um como "verificado por execução" (comando e trecho de saída) ou "não verificado" (motivo).
+- Nenhum código de produto mudou. Nada foi commitado, conforme instrução.
+### Comandos executados (todos com `GEMINI_API_KEY=` vazia; o valor do ambiente não foi usado)
+```
+$ .venv/bin/python scripts/pg_local.py stop
+$ mv pgdata analytics.duckdb dq_lab.duckdb logs .cosmos cosmos.environment.json /tmp/poc-backup-1795368000/   # estado limpo, sem apagar
+$ make GEMINI_API_KEY= pg-start migrate load       # 5000/500/20/5/20000/47617/20000/7194 linhas
+$ make GEMINI_API_KEY= etl                         # ETL 1 concluído em 252 ms, 8 tabelas
+$ make GEMINI_API_KEY= quality                     # oltp: 0 violações, 8 reconciliações OK; dq_lab: 7 regras DETECTADO; "qualidade: TUDO OK"
+$ .venv/bin/cosmos init . && rm -rf .githooks
+$ make GEMINI_API_KEY= sync                        # 103 registros, validate_graph_errors []; cosmos validate: valid true
+$ make GEMINI_API_KEY= metric-tests                # 21/21 testes de métrica passaram
+$ make GEMINI_API_KEY= load                        # segunda carga: "linhas novas inseridas em oltp: 0"
+$ make GEMINI_API_KEY= golden                      # valores iguais aos versionados (só a ordem das linhas muda); arquivo restaurado com git checkout
+$ make GEMINI_API_KEY= test                        # 266 passed, 14 deselected in 45.66s
+$ GEMINI_API_KEY= .venv/bin/python -m pytest -m live_gemini -q -rs   # 14 skipped (GEMINI_API_KEY ausente)
+$ .venv/bin/python -m pytest tests/frontend -q     # 14 passed (AppTest)
+$ bash scripts/bootstrap.sh                        # "Checked 18 packages", "Bootstrap concluído"
+$ uvicorn app.api.main:app (porta 8000) e streamlit run app/frontend/Home.py (porta 8501, headless)
+$ curl :8000/health                                # 200 gemini not_configured, postgres/duckdb/cosmos ok, etl_run_id 1
+$ curl -X POST :8000/ask                           # 503 gemini_not_configured
+$ curl -X POST :8000/tools/query_metric net_revenue 2026-10-02..2026-10-31   # 200 876344.70 (= golden)
+$ curl -X POST :8000/tools/query_metric active_customers por category         # 422 dimension_not_allowed
+$ curl -X POST :8000/tools/query_metric metric=lucro                           # 422 unknown_metric
+$ curl -X POST :8000/tools/execute_sql                                         # 404 unknown_tool
+$ curl -X POST :8000/tools/query_metric net_revenue por region top 1           # Sudeste 13063627.23 (= golden)
+$ curl -X POST :8000/tools/show_sql ; curl :8000/evidence/<id>                 # 200
+$ curl :8000/overview ; :8000/quality/runs ; :8501/_stcore/health ; :8501/     # 200
+$ grep -c AIza logs/*.log                          # 0 ocorrências
+```
+Servidores encerrados ao final. O PostgreSQL local ficou ligado.
+### Não verificado
+Gemini real, Docker/Compose, interface em navegador, instalação em clone limpo. Detalhes e motivos em `docs/ACCEPTANCE_REPORT.md`.
