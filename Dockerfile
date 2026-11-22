@@ -1,4 +1,4 @@
-# Imagem única dos serviços Python (api, frontend, init). NÃO verificada por execução: Docker indisponível no ambiente de desenvolvimento.
+# Imagem única dos serviços Python (api, frontend, init). Verificada por execução com docker compose (ver docs/history/ACCEPTANCE_REPORT.md, critério 12).
 FROM python:3.11-slim
 
 ARG COSMOS_URL=https://github.com/cosmos-semantic/cosmos

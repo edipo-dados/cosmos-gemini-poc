@@ -1,6 +1,6 @@
 # Relatório de aceite (Fase 6)
 
-Execução em 2026-11-22, macOS arm64, Python 3.11.18, `.venv` do projeto, PostgreSQL 16.2 real via `pgserver`. Toda a execução usou `GEMINI_API_KEY=` vazia (o shell e o `.env` têm um valor definido, que foi sobrescrito em todos os comandos para não chamar o serviço). Docker não existe no ambiente.
+Execução em 2026-11-22, macOS arm64, Python 3.11.18, `.venv` do projeto, PostgreSQL 16.2 real via `pgserver`. Toda a execução usou `GEMINI_API_KEY=` vazia (o shell e o `.env` têm um valor definido, que foi sobrescrito em todos os comandos para não chamar o serviço). Docker não existia no ambiente nesta fase (instalado depois; ver critério 12).
 
 ## Estado limpo
 
@@ -20,8 +20,8 @@ Antes da execução, `pgdata/`, `analytics.duckdb`, `dq_lab.duckdb`, `logs/`, `.
 | 8 | SQL inspecionável | verificado por execução |
 | 9 | Evidências disponíveis | verificado por execução |
 | 10 | Interface web funcional | verificado por execução (AppTest e serviço real); **não vista em navegador** |
-| 11 | Testes automatizados passando | verificado por execução (suíte padrão 271 passed; ao vivo 13/14 na última rodada) |
-| 12 | Aplicação inicia seguindo o README | verificado por execução, parcial: sem Docker e sem clone limpo |
+| 11 | Testes automatizados passando | verificado por execução (suíte padrão 271 passed; ao vivo 12/14 na rodada de 2026-11-22, q15 e q17 variam por interpretação) |
+| 12 | Aplicação inicia seguindo o README | verificado por execução: Docker Compose ponta a ponta (postgres, init, api, frontend saudáveis; `/chat` respondeu Sudeste, R$ 13.063.627,23). Clone limpo sem Docker não exercitado |
 
 Atualização de 2026-11-22: os critérios 5, 6 e 7 foram verificados com o Gemini real (`gemini-2.5-flash`, chave do `.env`, valor não exibido), após as correções do commit `a97afee`. Comandos e saídas em `docs/history/PHASE_REPORTS.md`, seção "Verificação ao vivo do Gemini". O restante deste relatório descreve a execução da Fase 6, feita sem chave.
 
@@ -140,14 +140,13 @@ $ make test      # pytest -m "not live_gemini" -q
 ```
 Cobre unidade, integração, segurança de permissões, frontend e as 19 perguntas golden (ambígua, métrica inexistente, dimensão não autorizada e tentativa de injeção de SQL incluídas). Os 14 testes `live_gemini` não rodaram nesta fase. Na verificação ao vivo posterior, `GEMINI_API_KEY= make test` deu 271 passed, 14 deselected (266 mais 5 testes do mapeamento 402/429), e `pytest -m live_gemini` deu 13 passed, 1 failed (critérios 5 e 6).
 
-### 12. Aplicação inicia seguindo o README: parcial
-Executados nesta sessão os comandos do README seção 5: `bash scripts/bootstrap.sh` (idempotente, "Bootstrap concluído"), `make pg-start migrate load etl quality sync metric-tests`, uvicorn na porta 8000, Streamlit na 8501, `make test`. Limites: a execução foi no diretório de trabalho existente (com `.venv`, `.vendor` e `.env` já presentes), não em um clone limpo; o `bootstrap.sh` não foi exercitado do zero. O caminho Docker do README (seção 6) **não foi executado**: não há Docker no ambiente, e só a análise estática do Compose e do Dockerfile passou.
-
+### 12. Aplicação inicia seguindo o README: verificado por execução
+Caminho local (README, execução local): `bash scripts/bootstrap.sh`, `make pg-start migrate load etl quality sync metric-tests`, uvicorn na 8000, Streamlit na 8501, `make test`. Limite: executado no diretório de trabalho existente, não em clone limpo.
+Caminho Docker Compose, atualizado em 2026-11-22 (Docker via colima): `cp .env.example .env`, `docker compose up -d postgres`, `docker compose run --rm init`, `docker compose up -d api frontend`. `docker compose ps`: `postgres` (postgres:16.2), `api` (127.0.0.1:8000) e `frontend` (127.0.0.1:8501) em `Up (healthy)`; o `init` (perfil `init`, `--rm`) terminou com sucesso. `GET /health`: `postgres`, `duckdb` e `cosmos` = `ok`, `gemini` = `configured`. `POST /chat` com "Qual região teve a maior receita?" respondeu **Sudeste, R$ 13.063.627,23** (métrica `net_revenue`), igual ao golden.
 ## Não verificado
 
 - Estabilidade do Gemini real: nenhuma rodada de `live_gemini` passou 14/14 (critério 6).
-- Docker, `docker compose config/build/up` e o encaixe do World no volume.
-- Interface em navegador.
+- Interface em navegador (a página foi checada por AppTest e HTTP 200, não visualmente).
 - Instalação em clone limpo e do zero.
 - Desempenho sob carga: só a consulta de 1,5 s com `/health` abaixo de 1 s (testada na Fase 4).
 - O 504 `query_timeout` na API (o timeout está testado no Query Engine).
@@ -164,7 +163,7 @@ Revisão da Fase 6: APPROVED. Achados de baixa gravidade, não bloqueantes:
 
 Riscos conhecidos:
 - Respostas do Gemini real variam entre execuções: 1 ou 2 das 14 perguntas golden falham por interpretação. A chamada acidental da Fase 4 recebeu HTTP 402; na verificação ao vivo não houve 402.
-- Docker/Compose não executado; World do Cosmos em volume de contêiner não verificado (`cosmos init` sem `.git` falha).
+- Docker/Compose e World do Cosmos em volume: verificados por execução em 2026-11-22 (critério 12).
 - Cosmos em "Developer Preview", fixado por commit; `transition_episode` é API interna, coberta por teste de contrato.
 - O sync grava conhecimento já `active` (sem fluxo `candidate` → `validated` → `active`).
 - Interface não vista em navegador; clone limpo e `bootstrap.sh` do zero não exercitados; timeout 504 da API e desempenho sob carga sem teste.

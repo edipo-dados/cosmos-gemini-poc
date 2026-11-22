@@ -1,4 +1,4 @@
-# NÃO verificado por execução: Docker não está disponível no ambiente de desenvolvimento (docs/history/PHASE_REPORTS.md, Fase 5).
+# Verificado por execução com colima/Docker (postgres, init, api, frontend saudáveis); ver docs/history/ACCEPTANCE_REPORT.md, critério 12.
 # Uso: cp .env.example .env (troque as senhas) e siga a seção "Docker" do README.
 name: cosmos-analytics-poc
 
