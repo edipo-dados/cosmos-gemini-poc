@@ -1,0 +1,19 @@
+{
+  "divergence": {
+    "divergent_metrics": [
+      "average_order_value",
+      "gross_revenue",
+      "net_revenue"
+    ],
+    "tampered_order_item_id": 1
+  },
+  "rules": {
+    "cancelled_with_captured_payment": 4,
+    "duplicate_payments": 5,
+    "inconsistent_dates": 7,
+    "items_without_product": 6,
+    "negative_values": 6,
+    "orders_without_customer": 7,
+    "refund_exceeds_paid": 3
+  }
+}

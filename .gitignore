@@ -9,3 +9,10 @@ __pycache__/
 pgdata/
 .agents/
 .DS_Store
+.env.*
+!.env.example
+logs/
+*.tmp
+.cosmos/
+cosmos.environment.json
+.githooks/
