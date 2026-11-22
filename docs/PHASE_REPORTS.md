@@ -338,3 +338,35 @@ Novos arquivos e o que cobrem:
 - Docker continua indisponível.
 
 Nada foi commitado nesta etapa, conforme instrução.
+
+## Fase 5: Frontend Streamlit e Docker Compose
+### O que foi feito
+- API: novo `app/api/routes_read.py` com `GET /etl/runs`, `/quality/runs`, `/quality/results`, `/audit/queries`, `/audit/queries/{id}` e `/overview`. Qualidade e cargas leem `ops.*` e a auditoria lê `audit.query_audit`, todas com o papel `poc_app` (só SELECT). `/overview` chama o `ToolExecutor` (Cosmos + Query Engine + auditoria) sob o usuário interno `overview`, para não poluir a lista de auditoria do usuário. Nenhum endpoint existente mudou.
+- Frontend (`app/frontend/`, só HTTP via `httpx`, nunca banco nem Gemini): `Home.py` e 5 páginas (`1_Analytics_Assistant`, `2_Semantic_Catalog`, `3_Data_Quality`, `4_SQL_and_Evidence`, `5_Data_Overview`), mais `api_client`, `formatting` (BRL/percentual pt-BR a partir de `Decimal`), `charts` (Plotly), `theme`, `components`. Tema em `.streamlit/config.toml`.
+- Assistente: chat com exemplos clicáveis; resposta, indicadores, gráfico e expanders de métrica/regras/filtros, SQL executado e evidências (fonte, versão, episódio e decisão do Cosmos). Sem chave: aviso claro e aba "Consulta direta de métrica" (`/tools/query_metric`), que funciona sem Gemini. Páginas 2 a 5 não dependem da chave.
+- Docker (NÃO executado): `Dockerfile` (python:3.11-slim, usuário não root, Cosmos no commit fixado em `/opt/cosmos`, sem `pgserver`), `docker-compose.yml` (`postgres:16.2`, `init` com perfil `init`, `api` com 1 worker, `frontend`; healthchecks; volumes `pg_data`, `duckdb_data` em `/data`, `cosmos_world` em `/world`; segredos mínimos por serviço), `.dockerignore`, `scripts/docker_init.sh`, `scripts/cosmos_world_init.sh`.
+### Validação por execução real
+```
+$ .venv/bin/python -m pytest tests/frontend tests/unit/test_compose_static.py -q
+25 passed in 8.74s
+$ .venv/bin/python -m pytest tests -q -m "not live_gemini"
+266 passed, 14 deselected in 48.85s        # 241 anteriores + 25 desta fase
+```
+- `tests/frontend/test_pages_apptest.py`: `AppTest.from_file` sobre uvicorn real (subprocesso, bancos e World do Cosmos reais, `GEMINI_API_KEY` vazia). Cada página roda sem exceção; as 8 métricas aparecem no catálogo; KPIs do Overview iguais ao golden (`expected.json`); Qualidade mostra regras e cargas; SQL & Evidence lista a chamada auditada e mostra SQL e decisão do Cosmos; Assistente sem chave mostra o aviso, sem campo de chat, e a consulta direta devolve o valor do Sudeste igual ao golden; API fora do ar mostra erro sem exceção; as páginas não importam banco nem Gemini.
+- Chat: um teste usa a API com o SDK real e **transporte roteirizado** (`tests/support/serve_fake_gemini.py`). Isso exercita a interface, **não verifica o Gemini**.
+- Serviço real (executado): uvicorn e `streamlit run app/frontend/Home.py --server.port 8501 --server.headless true`:
+```
+http://localhost:8000/health 200 {"status":"ok","gemini":"not_configured",...,"etl_run_id":2}
+http://localhost:8501/_stcore/health 200 ok
+GET / 200
+Home.py exceptions: 0 ... pages/1..5: exceptions: 0 (Assistente com aviso de chave; Overview com 6 métricas)
+```
+  Processos encerrados depois. Também executado de verdade: `scripts/cosmos_world_init.sh` em diretório temporário (cria o World, segunda execução é no-op), seguido de `python -m semantic.sync_to_cosmos` e `cosmos validate` (`valid: true`).
+### Docker: NÃO executado
+`docker` e `hadolint` não existem aqui. `tests/unit/test_compose_static.py` (11 testes) só lê os arquivos: YAML válido; serviços e perfil; toda variável `${...}` existe em `.env.example`; nomes de ambiente são campos de `Settings`; API sem senhas além de `PG_APP_PASSWORD`, frontend sem segredos; portas, comandos, healthchecks, `depends_on`, volumes e caminhos montados coerentes; módulos do `docker_init.sh` existem; revisão do Dockerfile no estilo hadolint (base fixa, `--no-install-recommends`, limpeza do apt, sem cache do pip, usuário não root, sem segredos em ENV, `COPY` existentes, commit do Cosmos igual ao de `bootstrap.sh`). `docker compose config`, `docker build` e a subida dos contêineres **não foram verificados**, nem o encaixe do World no volume.
+### Não verificado
+- Chat com o Gemini real (sem chave); `gemini-2.5-flash` não validado.
+- Aparência visual: há Google Chrome, mas a captura headless mostrou só o esqueleto de carregamento (WebSocket não concluiu). A captura foi descartada; a interface não foi vista em navegador.
+- Docker e compose (acima). A API em contêiner reinicia (`on-failure`) até o `init` criar World e DuckDB.
+- Uso: `cp .env.example .env`, `docker compose up -d postgres`, `docker compose run --rm init`, `docker compose up -d api frontend`.
+Nada foi commitado, conforme instrução.

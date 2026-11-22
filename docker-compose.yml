@@ -1,0 +1,108 @@
+# NÃO verificado por execução: Docker não está disponível no ambiente de desenvolvimento (docs/PHASE_REPORTS.md, Fase 5).
+# Uso: cp .env.example .env (troque as senhas) e siga a seção "Docker" do README.
+name: cosmos-analytics-poc
+
+x-app-image: &app-image
+  image: cosmos-analytics-poc:latest
+  build:
+    context: .
+    dockerfile: Dockerfile
+
+services:
+  postgres:
+    image: postgres:16.2
+    environment:
+      POSTGRES_USER: poc_admin
+      POSTGRES_PASSWORD: ${PG_ADMIN_PASSWORD:?defina PG_ADMIN_PASSWORD no .env}
+      POSTGRES_DB: ${PG_DATABASE:-analytics_poc}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./database/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U poc_admin -d ${PG_DATABASE:-analytics_poc}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    restart: unless-stopped
+
+  init:
+    <<: *app-image
+    profiles: ["init"]
+    command: ["bash", "scripts/docker_init.sh"]
+    environment:
+      PG_HOST: postgres
+      PG_PORT: "5432"
+      PG_DATABASE: ${PG_DATABASE:-analytics_poc}
+      PG_ADMIN_PASSWORD: ${PG_ADMIN_PASSWORD:?defina PG_ADMIN_PASSWORD no .env}
+      PG_LOADER_PASSWORD: ${PG_LOADER_PASSWORD:?defina PG_LOADER_PASSWORD no .env}
+      PG_READER_PASSWORD: ${PG_READER_PASSWORD:?defina PG_READER_PASSWORD no .env}
+      PG_DQ_PASSWORD: ${PG_DQ_PASSWORD:?defina PG_DQ_PASSWORD no .env}
+      PG_APP_PASSWORD: ${PG_APP_PASSWORD:?defina PG_APP_PASSWORD no .env}
+      SEED: ${SEED:-42}
+      DATA_END_DATE: ${DATA_END_DATE:-2026-10-31}
+      DUCKDB_PATH: /data/analytics.duckdb
+      DQ_LAB_DUCKDB_PATH: /data/dq_lab.duckdb
+      LOG_DIR: /data/logs
+      COSMOS_WORLD_DIR: /world
+    volumes:
+      - duckdb_data:/data
+      - cosmos_world:/world
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    <<: *app-image
+    command: ["uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+    environment:
+      PG_HOST: postgres
+      PG_PORT: "5432"
+      PG_DATABASE: ${PG_DATABASE:-analytics_poc}
+      PG_APP_PASSWORD: ${PG_APP_PASSWORD:?defina PG_APP_PASSWORD no .env}
+      DATA_END_DATE: ${DATA_END_DATE:-2026-10-31}
+      DUCKDB_PATH: /data/analytics.duckdb
+      LOG_DIR: /data/logs
+      COSMOS_WORLD_DIR: /world
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - duckdb_data:/data
+      - cosmos_world:/world
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    # a API não sobe sem o World e o DuckDB criados pelo serviço init: tenta de novo até a carga terminar
+    restart: on-failure
+
+  frontend:
+    <<: *app-image
+    command: ["streamlit", "run", "app/frontend/Home.py", "--server.port", "8501", "--server.address", "0.0.0.0",
+              "--server.headless", "true"]
+    environment:
+      API_URL: http://api:8000
+    ports:
+      - "127.0.0.1:8501:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 15s
+    restart: unless-stopped
+
+volumes:
+  pg_data:
+  duckdb_data:
+  cosmos_world:

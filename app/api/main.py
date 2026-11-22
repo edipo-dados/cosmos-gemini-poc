@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from google.genai import types
 
-from app.api import routes_chat, routes_data, routes_tools
+from app.api import routes_chat, routes_data, routes_read, routes_tools
 from app.api.errors import error_response, register_handlers
 from app.api.schemas import MAX_BODY_BYTES
 from app.api.state import build_state
@@ -77,6 +77,7 @@ def create_app(settings: Settings | None = None, gemini_http_options: types.Http
         return response
 
     app.include_router(routes_data.router)
+    app.include_router(routes_read.router)
     app.include_router(routes_tools.router)
     app.include_router(routes_chat.router)
     return app
