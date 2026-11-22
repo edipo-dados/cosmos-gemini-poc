@@ -1,0 +1,37 @@
+name: gross_revenue
+business_name: "Receita Bruta"
+description: "Valor bruto dos itens de pedidos pagos, antes de qualquer reembolso. Pedido pago é o pedido com status paid ou refunded (houve captura do pagamento)."
+formula: "SUM(order_items.line_total) dos pedidos com status IN ('paid','refunded')"
+source:
+  system: duckdb
+  tables: [fact_orders, fact_order_items]
+grain: item
+expression: "COALESCE(SUM(i.line_total), 0)"
+base_filter: "o.is_paid"
+joins: []
+value_type: money
+denominator: "Não se aplica (soma)."
+status_rule: "Conta pedidos paid e refunded. Ignora pending e cancelled. Reembolsos não são descontados."
+time_basis: "Data do pedido (fact_orders.order_date)."
+allowed_dimensions: [date, month, year, region, segment, category, product, payment_method, order_status]
+applicable_filters:
+  dimensions: [date, month, year, region, segment, category, product, payment_method, order_status]
+  date_range: true
+owner: "Finanças"
+version: "1.0.0"
+tests:
+  - id: total_vs_reference_sql
+    type: reconciliation
+    description: "Total no DuckDB igual ao SQL de referência no PostgreSQL (oltp), tolerância 0."
+    reference_sql: pipelines/quality/reference_sql/gross_revenue.sql
+    tolerance: "0"
+  - id: additive_by_region
+    type: invariant
+    invariant: additive_by_dimension
+    dimension: region
+    description: "A soma por região é igual ao total."
+  - id: not_negative
+    type: invariant
+    invariant: min_value
+    min: "0"
+    description: "Receita bruta nunca é negativa."

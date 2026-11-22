@@ -1,0 +1,59 @@
+# Regras de negócio que removem ambiguidade. Cada regra vira um nó `knowledge` (rule) no Cosmos,
+# ligado às métricas por `core.governed_by`. `applies_to: all` liga a regra às 8 métricas.
+version: "1.0.0"
+rules:
+  - id: paid_order_definition
+    title: "Pedido pago"
+    category: status
+    applies_to: [gross_revenue, net_revenue, average_order_value, active_customers, monthly_revenue_growth]
+    statement: "Pedido pago é o pedido com status paid ou refunded, porque houve captura do pagamento. Pedidos pending e cancelled nunca entram em receita, ticket médio, clientes ativos ou crescimento."
+  - id: order_status_values
+    title: "Status do pedido"
+    category: status
+    applies_to: all
+    statement: "O status do pedido é pending, paid, cancelled ou refunded. refunded significa que todos os itens foram reembolsados integralmente. Reembolso parcial mantém o status paid."
+  - id: effective_refund
+    title: "Reembolso efetivado"
+    category: status
+    applies_to: [net_revenue, refund_amount, average_order_value, monthly_revenue_growth]
+    statement: "Só reembolsos com status completed são efetivados. Reembolsos pending e rejected não reduzem a receita líquida e não entram em refund_amount."
+  - id: time_basis_order_date
+    title: "Base de tempo"
+    category: time
+    applies_to: all
+    statement: "Todas as métricas usam a data do pedido (fact_orders.order_date). Reembolsos são atribuídos à data do pedido de origem, não à data do reembolso."
+  - id: denominator_order_count
+    title: "Denominador de order_count e cancellation_rate"
+    category: denominator
+    applies_to: [order_count, cancellation_rate]
+    statement: "order_count conta pedidos de todos os status. cancellation_rate divide pedidos cancelled por esse mesmo total, no mesmo recorte. A taxa é uma razão de 0 a 1."
+  - id: denominator_average_order_value
+    title: "Denominador do ticket médio"
+    category: denominator
+    applies_to: [average_order_value]
+    statement: "average_order_value é a receita líquida dividida por pedidos pagos distintos no mesmo recorte. O resultado é NULL quando não há pedidos pagos."
+  - id: active_customer_window
+    title: "Janela de cliente ativo"
+    category: window
+    applies_to: [active_customers]
+    statement: "Cliente ativo tem ao menos um pedido pago em 90 dias corridos, de as_of - 89 dias até as_of, incluindo as_of. as_of é o date_to da consulta. Sem date_to, é a data final dos dados (DATA_END_DATE), nunca a data do sistema. date_from não é aceito."
+  - id: growth_calendar
+    title: "Crescimento mensal"
+    category: window
+    applies_to: [monthly_revenue_growth]
+    statement: "O crescimento compara a receita líquida do mês com a do mês anterior sobre um calendário completo (mês sem venda vale 0). O primeiro mês do histórico e meses cujo anterior vale 0 retornam NULL. date_from e date_to restringem só os meses devolvidos."
+  - id: category_product_attribution
+    title: "Atribuição por categoria e produto"
+    category: attribution
+    applies_to: [gross_revenue, net_revenue, order_count, average_order_value, refund_amount]
+    statement: "Receita e reembolsos são atribuídos por item, então o recorte por categoria ou produto é exato. order_count e o denominador do ticket médio contam pedidos distintos com ao menos um item do recorte."
+  - id: money_precision
+    title: "Valores monetários"
+    category: precision
+    applies_to: [gross_revenue, net_revenue, average_order_value, refund_amount, monthly_revenue_growth]
+    statement: "Valores monetários usam DECIMAL(12,2) em reais (BRL). Razões e quocientes são calculados em ponto flutuante de dupla precisão."
+  - id: governed_queries_only
+    title: "Consultas governadas"
+    category: governance
+    applies_to: all
+    statement: "O agente só consulta métricas cadastradas e dimensões permitidas para cada métrica. Combinações não permitidas são rejeitadas. Não existe SQL livre."

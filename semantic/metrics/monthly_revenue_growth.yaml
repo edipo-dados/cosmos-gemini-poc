@@ -1,0 +1,36 @@
+name: monthly_revenue_growth
+business_name: "Crescimento Mensal da Receita"
+description: "Crescimento percentual da receita líquida do mês em relação ao mês anterior, como razão (0,10 = 10%)."
+formula: "net_revenue(mês) / net_revenue(mês anterior) - 1"
+source:
+  system: duckdb
+  tables: [fact_orders, fact_order_items, fact_refunds, dim_date]
+grain: growth
+kind: growth
+base_metric: net_revenue
+expression: "net_revenue"
+base_filter: "o.is_paid"
+joins: []
+value_type: ratio
+denominator: "Receita líquida do mês anterior. NULL no primeiro mês do histórico e quando o mês anterior vale 0."
+status_rule: "Herda net_revenue: pedidos paid e refunded, reembolsos completed."
+time_basis: "Calendário completo dos meses do histórico (mês sem venda vale 0), calculado antes de date_from e date_to. Esses limites só restringem os meses devolvidos, então o primeiro mês da janela usa o mês anterior real."
+required_dimensions: [month]
+allowed_dimensions: [month, region, segment]
+applicable_filters:
+  dimensions: [month, region, segment]
+  date_range: true
+owner: "Finanças"
+version: "1.0.0"
+tests:
+  - id: series_vs_reference_sql
+    type: reconciliation
+    description: "Série mensal no DuckDB igual ao SQL de referência no PostgreSQL (oltp), tolerância absoluta 1e-9."
+    reference_sql: pipelines/quality/reference_sql/monthly_revenue_growth.sql
+    tolerance: "1e-9"
+    dimensions: [month]
+  - id: first_month_is_null
+    type: invariant
+    invariant: first_row_null
+    dimensions: [month]
+    description: "O primeiro mês do histórico não tem mês anterior e vale NULL."

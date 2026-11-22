@@ -1,0 +1,5831 @@
+{
+ "source": "PostgreSQL oltp via poc_reader, SQL independente (scripts/compute_golden.py)",
+ "seed": 42,
+ "data_end_date": "2026-10-31",
+ "orders_total": 20000,
+ "cases": [
+  {
+   "id": "gross_revenue.by_total",
+   "request": {
+    "metric": "gross_revenue",
+    "dimensions": [],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "value": "30515235.50"
+    }
+   ]
+  },
+  {
+   "id": "gross_revenue.by_region",
+   "request": {
+    "metric": "gross_revenue",
+    "dimensions": [
+     "region"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "region": "Norte",
+     "value": "1550874.60"
+    },
+    {
+     "region": "Sul",
+     "value": "4837628.00"
+    },
+    {
+     "region": "Centro-Oeste",
+     "value": "2964142.50"
+    },
+    {
+     "region": "Nordeste",
+     "value": "5993305.80"
+    },
+    {
+     "region": "Sudeste",
+     "value": "15169284.60"
+    }
+   ]
+  },
+  {
+   "id": "gross_revenue.by_segment",
+   "request": {
+    "metric": "gross_revenue",
+    "dimensions": [
+     "segment"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "segment": "Varejo",
+     "value": "7950814.20"
+    },
+    {
+     "segment": "Corporativo",
+     "value": "6795170.30"
+    },
+    {
+     "segment": "Pequena Empresa",
+     "value": "5170862.90"
+    },
+    {
+     "segment": "Premium",
+     "value": "10598388.10"
+    }
+   ]
+  },
+  {
+   "id": "gross_revenue.by_month",
+   "request": {
+    "metric": "gross_revenue",
+    "dimensions": [
+     "month"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "month": "2025-11",
+     "value": "1821872.30"
+    },
+    {
+     "month": "2026-01",
+     "value": "1105683.30"
+    },
+    {
+     "month": "2025-10",
+     "value": "1370476.90"
+    },
+    {
+     "month": "2025-08",
+     "value": "1086797.40"
+    },
+    {
+     "month": "2026-02",
+     "value": "1022827.80"
+    },
+    {
+     "month": "2026-10",
+     "value": "1157144.70"
+    },
+    {
+     "month": "2026-04",
+     "value": "1327936.90"
+    },
+    {
+     "month": "2025-02",
+     "value": "698764.90"
+    },
+    {
+     "month": "2025-05",
+     "value": "1397287.30"
+    },
+    {
+     "month": "2025-12",
+     "value": "1776780.10"
+    },
+    {
+     "month": "2025-04",
+     "value": "928845.00"
+    },
+    {
+     "month": "2026-05",
+     "value": "1650986.90"
+    },
+    {
+     "month": "2026-07",
+     "value": "1511736.20"
+    },
+    {
+     "month": "2024-12",
+     "value": "1391329.90"
+    },
+    {
+     "month": "2026-08",
+     "value": "1402380.60"
+    },
+    {
+     "month": "2025-06",
+     "value": "1091193.30"
+    },
+    {
+     "month": "2025-09",
+     "value": "1037225.50"
+    },
+    {
+     "month": "2025-03",
+     "value": "1159462.90"
+    },
+    {
+     "month": "2026-06",
+     "value": "1515825.90"
+    },
+    {
+     "month": "2026-09",
+     "value": "1496182.50"
+    },
+    {
+     "month": "2024-11",
+     "value": "1327043.00"
+    },
+    {
+     "month": "2025-07",
+     "value": "1047817.70"
+    },
+    {
+     "month": "2025-01",
+     "value": "940411.80"
+    },
+    {
+     "month": "2026-03",
+     "value": "1249222.70"
+    }
+   ]
+  },
+  {
+   "id": "gross_revenue.by_category",
+   "request": {
+    "metric": "gross_revenue",
+    "dimensions": [
+     "category"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "category": "Cama, Mesa e Banho",
+     "value": "614894.10"
+    },
+    {
+     "category": "Ferramentas",
+     "value": "634387.30"
+    },
+    {
+     "category": "Esporte e Lazer",
+     "value": "2257994.10"
+    },
+    {
+     "category": "Moda Feminina",
+     "value": "644540.50"
+    },
+    {
+     "category": "Beleza e Perfumaria",
+     "value": "559969.90"
+    },
+    {
+     "category": "Games",
+     "value": "6790666.50"
+    },
+    {
+     "category": "Eletrodomésticos",
+     "value": "1411937.50"
+    },
+    {
+     "category": "Moda Masculina",
+     "value": "1149323.30"
+    },
+    {
+     "category": "Papelaria",
+     "value": "198473.20"
+    },
+    {
+     "category": "Eletrônicos",
+     "value": "2348103.50"
+    },
+    {
+     "category": "Saúde e Bem-estar",
+     "value": "521465.00"
+    },
+    {
+     "category": "Móveis",
+     "value": "6021711.00"
+    },
+    {
+     "category": "Celulares e Acessórios",
+     "value": "450833.90"
+    },
+    {
+     "category": "Livros",
+     "value": "163139.80"
+    },
+    {
+     "category": "Brinquedos",
+     "value": "509445.80"
+    },
+    {
+     "category": "Automotivo",
+     "value": "944502.40"
+    },
+    {
+     "category": "Calçados",
+     "value": "941392.10"
+    },
+    {
+     "category": "Informática",
+     "value": "3066912.70"
+    },
+    {
+     "category": "Pet Shop",
+     "value": "391813.20"
+    },
+    {
+     "category": "Decoração",
+     "value": "893729.70"
+    }
+   ]
+  },
+  {
+   "id": "gross_revenue.by_payment_method",
+   "request": {
+    "metric": "gross_revenue",
+    "dimensions": [
+     "payment_method"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "payment_method": "pix",
+     "value": "9750899.80"
+    },
+    {
+     "payment_method": "boleto",
+     "value": "4241742.00"
+    },
+    {
+     "payment_method": "debit_card",
+     "value": "2928881.90"
+    },
+    {
+     "payment_method": "credit_card",
+     "value": "13593711.80"
+    }
+   ]
+  },
+  {
+   "id": "gross_revenue.by_order_status",
+   "request": {
+    "metric": "gross_revenue",
+    "dimensions": [
+     "order_status"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "order_status": "refunded",
+     "value": "3347314.40"
+    },
+    {
+     "order_status": "paid",
+     "value": "27167921.10"
+    }
+   ]
+  },
+  {
+   "id": "gross_revenue.by_year",
+   "request": {
+    "metric": "gross_revenue",
+    "dimensions": [
+     "year"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "year": 2025,
+     "value": "14356935.10"
+    },
+    {
+     "year": 2026,
+     "value": "13439927.50"
+    },
+    {
+     "year": 2024,
+     "value": "2718372.90"
+    }
+   ]
+  },
+  {
+   "id": "net_revenue.by_total",
+   "request": {
+    "metric": "net_revenue",
+    "dimensions": [],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "value": "26269632.31"
+    }
+   ]
+  },
+  {
+   "id": "net_revenue.by_region",
+   "request": {
+    "metric": "net_revenue",
+    "dimensions": [
+     "region"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "region": "Centro-Oeste",
+     "value": "2561406.71"
+    },
+    {
+     "region": "Nordeste",
+     "value": "5091038.54"
+    },
+    {
+     "region": "Norte",
+     "value": "1340655.79"
+    },
+    {
+     "region": "Sudeste",
+     "value": "13063627.23"
+    },
+    {
+     "region": "Sul",
+     "value": "4212904.04"
+    }
+   ]
+  },
+  {
+   "id": "net_revenue.by_segment",
+   "request": {
+    "metric": "net_revenue",
+    "dimensions": [
+     "segment"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "segment": "Corporativo",
+     "value": "5814834.31"
+    },
+    {
+     "segment": "Pequena Empresa",
+     "value": "4402590.76"
+    },
+    {
+     "segment": "Premium",
+     "value": "9244509.83"
+    },
+    {
+     "segment": "Varejo",
+     "value": "6807697.41"
+    }
+   ]
+  },
+  {
+   "id": "net_revenue.by_month",
+   "request": {
+    "metric": "net_revenue",
+    "dimensions": [
+     "month"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "month": "2024-11",
+     "value": "1101112.39"
+    },
+    {
+     "month": "2024-12",
+     "value": "1213258.49"
+    },
+    {
+     "month": "2025-01",
+     "value": "801321.79"
+    },
+    {
+     "month": "2025-02",
+     "value": "585165.92"
+    },
+    {
+     "month": "2025-03",
+     "value": "976354.80"
+    },
+    {
+     "month": "2025-04",
+     "value": "761275.19"
+    },
+    {
+     "month": "2025-05",
+     "value": "1180257.76"
+    },
+    {
+     "month": "2025-06",
+     "value": "955715.09"
+    },
+    {
+     "month": "2025-07",
+     "value": "900397.01"
+    },
+    {
+     "month": "2025-08",
+     "value": "932509.66"
+    },
+    {
+     "month": "2025-09",
+     "value": "896802.64"
+    },
+    {
+     "month": "2025-10",
+     "value": "1226382.62"
+    },
+    {
+     "month": "2025-11",
+     "value": "1597021.15"
+    },
+    {
+     "month": "2025-12",
+     "value": "1525603.28"
+    },
+    {
+     "month": "2026-01",
+     "value": "921743.27"
+    },
+    {
+     "month": "2026-02",
+     "value": "915481.54"
+    },
+    {
+     "month": "2026-03",
+     "value": "1110498.65"
+    },
+    {
+     "month": "2026-04",
+     "value": "1158774.46"
+    },
+    {
+     "month": "2026-05",
+     "value": "1462429.96"
+    },
+    {
+     "month": "2026-06",
+     "value": "1258579.94"
+    },
+    {
+     "month": "2026-07",
+     "value": "1318429.99"
+    },
+    {
+     "month": "2026-08",
+     "value": "1235798.12"
+    },
+    {
+     "month": "2026-09",
+     "value": "1271615.19"
+    },
+    {
+     "month": "2026-10",
+     "value": "963103.40"
+    }
+   ]
+  },
+  {
+   "id": "net_revenue.by_category",
+   "request": {
+    "metric": "net_revenue",
+    "dimensions": [
+     "category"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "category": "Automotivo",
+     "value": "795177.13"
+    },
+    {
+     "category": "Beleza e Perfumaria",
+     "value": "476474.65"
+    },
+    {
+     "category": "Brinquedos",
+     "value": "441327.81"
+    },
+    {
+     "category": "Calçados",
+     "value": "803522.73"
+    },
+    {
+     "category": "Cama, Mesa e Banho",
+     "value": "525505.39"
+    },
+    {
+     "category": "Celulares e Acessórios",
+     "value": "392335.17"
+    },
+    {
+     "category": "Decoração",
+     "value": "774274.97"
+    },
+    {
+     "category": "Eletrodomésticos",
+     "value": "1200402.83"
+    },
+    {
+     "category": "Eletrônicos",
+     "value": "2020397.80"
+    },
+    {
+     "category": "Esporte e Lazer",
+     "value": "1915312.15"
+    },
+    {
+     "category": "Ferramentas",
+     "value": "539743.03"
+    },
+    {
+     "category": "Games",
+     "value": "5932376.62"
+    },
+    {
+     "category": "Informática",
+     "value": "2662229.05"
+    },
+    {
+     "category": "Livros",
+     "value": "138074.28"
+    },
+    {
+     "category": "Moda Feminina",
+     "value": "559048.62"
+    },
+    {
+     "category": "Moda Masculina",
+     "value": "985247.49"
+    },
+    {
+     "category": "Móveis",
+     "value": "5147551.80"
+    },
+    {
+     "category": "Papelaria",
+     "value": "169811.13"
+    },
+    {
+     "category": "Pet Shop",
+     "value": "337594.42"
+    },
+    {
+     "category": "Saúde e Bem-estar",
+     "value": "453225.24"
+    }
+   ]
+  },
+  {
+   "id": "net_revenue.by_payment_method",
+   "request": {
+    "metric": "net_revenue",
+    "dimensions": [
+     "payment_method"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "payment_method": "boleto",
+     "value": "3684897.39"
+    },
+    {
+     "payment_method": "credit_card",
+     "value": "11680335.47"
+    },
+    {
+     "payment_method": "debit_card",
+     "value": "2474409.81"
+    },
+    {
+     "payment_method": "pix",
+     "value": "8429989.64"
+    }
+   ]
+  },
+  {
+   "id": "net_revenue.by_order_status",
+   "request": {
+    "metric": "net_revenue",
+    "dimensions": [
+     "order_status"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "order_status": "paid",
+     "value": "26269632.31"
+    },
+    {
+     "order_status": "refunded",
+     "value": "0.00"
+    }
+   ]
+  },
+  {
+   "id": "net_revenue.by_year",
+   "request": {
+    "metric": "net_revenue",
+    "dimensions": [
+     "year"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "year": 2024,
+     "value": "2314370.88"
+    },
+    {
+     "year": 2025,
+     "value": "12338806.91"
+    },
+    {
+     "year": 2026,
+     "value": "11616454.52"
+    }
+   ]
+  },
+  {
+   "id": "order_count.by_total",
+   "request": {
+    "metric": "order_count",
+    "dimensions": [],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "value": "20000"
+    }
+   ]
+  },
+  {
+   "id": "order_count.by_region",
+   "request": {
+    "metric": "order_count",
+    "dimensions": [
+     "region"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "region": "Centro-Oeste",
+     "value": "1918"
+    },
+    {
+     "region": "Nordeste",
+     "value": "4004"
+    },
+    {
+     "region": "Norte",
+     "value": "1023"
+    },
+    {
+     "region": "Sudeste",
+     "value": "10016"
+    },
+    {
+     "region": "Sul",
+     "value": "3039"
+    }
+   ]
+  },
+  {
+   "id": "order_count.by_segment",
+   "request": {
+    "metric": "order_count",
+    "dimensions": [
+     "segment"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "segment": "Corporativo",
+     "value": "2373"
+    },
+    {
+     "segment": "Pequena Empresa",
+     "value": "3485"
+    },
+    {
+     "segment": "Premium",
+     "value": "4480"
+    },
+    {
+     "segment": "Varejo",
+     "value": "9662"
+    }
+   ]
+  },
+  {
+   "id": "order_count.by_month",
+   "request": {
+    "metric": "order_count",
+    "dimensions": [
+     "month"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "month": "2024-11",
+     "value": "928"
+    },
+    {
+     "month": "2024-12",
+     "value": "880"
+    },
+    {
+     "month": "2025-01",
+     "value": "562"
+    },
+    {
+     "month": "2025-02",
+     "value": "478"
+    },
+    {
+     "month": "2025-03",
+     "value": "673"
+    },
+    {
+     "month": "2025-04",
+     "value": "600"
+    },
+    {
+     "month": "2025-05",
+     "value": "890"
+    },
+    {
+     "month": "2025-06",
+     "value": "709"
+    },
+    {
+     "month": "2025-07",
+     "value": "720"
+    },
+    {
+     "month": "2025-08",
+     "value": "736"
+    },
+    {
+     "month": "2025-09",
+     "value": "711"
+    },
+    {
+     "month": "2025-10",
+     "value": "880"
+    },
+    {
+     "month": "2025-11",
+     "value": "1154"
+    },
+    {
+     "month": "2025-12",
+     "value": "1217"
+    },
+    {
+     "month": "2026-01",
+     "value": "682"
+    },
+    {
+     "month": "2026-02",
+     "value": "628"
+    },
+    {
+     "month": "2026-03",
+     "value": "816"
+    },
+    {
+     "month": "2026-04",
+     "value": "840"
+    },
+    {
+     "month": "2026-05",
+     "value": "1093"
+    },
+    {
+     "month": "2026-06",
+     "value": "932"
+    },
+    {
+     "month": "2026-07",
+     "value": "926"
+    },
+    {
+     "month": "2026-08",
+     "value": "946"
+    },
+    {
+     "month": "2026-09",
+     "value": "971"
+    },
+    {
+     "month": "2026-10",
+     "value": "1028"
+    }
+   ]
+  },
+  {
+   "id": "order_count.by_category",
+   "request": {
+    "metric": "order_count",
+    "dimensions": [
+     "category"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "category": "Automotivo",
+     "value": "2131"
+    },
+    {
+     "category": "Beleza e Perfumaria",
+     "value": "2182"
+    },
+    {
+     "category": "Brinquedos",
+     "value": "2166"
+    },
+    {
+     "category": "Calçados",
+     "value": "2104"
+    },
+    {
+     "category": "Cama, Mesa e Banho",
+     "value": "2031"
+    },
+    {
+     "category": "Celulares e Acessórios",
+     "value": "2173"
+    },
+    {
+     "category": "Decoração",
+     "value": "2198"
+    },
+    {
+     "category": "Eletrodomésticos",
+     "value": "2327"
+    },
+    {
+     "category": "Eletrônicos",
+     "value": "2424"
+    },
+    {
+     "category": "Esporte e Lazer",
+     "value": "2406"
+    },
+    {
+     "category": "Ferramentas",
+     "value": "2173"
+    },
+    {
+     "category": "Games",
+     "value": "2844"
+    },
+    {
+     "category": "Informática",
+     "value": "2477"
+    },
+    {
+     "category": "Livros",
+     "value": "2072"
+    },
+    {
+     "category": "Moda Feminina",
+     "value": "2074"
+    },
+    {
+     "category": "Moda Masculina",
+     "value": "2279"
+    },
+    {
+     "category": "Móveis",
+     "value": "2956"
+    },
+    {
+     "category": "Papelaria",
+     "value": "2059"
+    },
+    {
+     "category": "Pet Shop",
+     "value": "2041"
+    },
+    {
+     "category": "Saúde e Bem-estar",
+     "value": "2073"
+    }
+   ]
+  },
+  {
+   "id": "order_count.by_payment_method",
+   "request": {
+    "metric": "order_count",
+    "dimensions": [
+     "payment_method"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "payment_method": "boleto",
+     "value": "2944"
+    },
+    {
+     "payment_method": "credit_card",
+     "value": "8987"
+    },
+    {
+     "payment_method": "debit_card",
+     "value": "2007"
+    },
+    {
+     "payment_method": "pix",
+     "value": "6062"
+    }
+   ]
+  },
+  {
+   "id": "order_count.by_order_status",
+   "request": {
+    "metric": "order_count",
+    "dimensions": [
+     "order_status"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "order_status": "cancelled",
+     "value": "2338"
+    },
+    {
+     "order_status": "paid",
+     "value": "14755"
+    },
+    {
+     "order_status": "pending",
+     "value": "1090"
+    },
+    {
+     "order_status": "refunded",
+     "value": "1817"
+    }
+   ]
+  },
+  {
+   "id": "order_count.by_year",
+   "request": {
+    "metric": "order_count",
+    "dimensions": [
+     "year"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "year": 2024,
+     "value": "1808"
+    },
+    {
+     "year": 2025,
+     "value": "9330"
+    },
+    {
+     "year": 2026,
+     "value": "8862"
+    }
+   ]
+  },
+  {
+   "id": "average_order_value.by_total",
+   "request": {
+    "metric": "average_order_value",
+    "dimensions": [],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "value": "1585.1817710596185"
+    }
+   ]
+  },
+  {
+   "id": "average_order_value.by_region",
+   "request": {
+    "metric": "average_order_value",
+    "dimensions": [
+     "region"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "region": "Centro-Oeste",
+     "value": "1605.8976238244513"
+    },
+    {
+     "region": "Nordeste",
+     "value": "1542.2715964859133"
+    },
+    {
+     "region": "Norte",
+     "value": "1539.2144546498278"
+    },
+    {
+     "region": "Sudeste",
+     "value": "1579.2586109767892"
+    },
+    {
+     "region": "Sul",
+     "value": "1663.2072799052507"
+    }
+   ]
+  },
+  {
+   "id": "average_order_value.by_segment",
+   "request": {
+    "metric": "average_order_value",
+    "dimensions": [
+     "segment"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "segment": "Corporativo",
+     "value": "2954.692230691057"
+    },
+    {
+     "segment": "Pequena Empresa",
+     "value": "1541.52337535014"
+    },
+    {
+     "segment": "Premium",
+     "value": "2505.287216802168"
+    },
+    {
+     "segment": "Varejo",
+     "value": "844.837107222636"
+    }
+   ]
+  },
+  {
+   "id": "average_order_value.by_month",
+   "request": {
+    "metric": "average_order_value",
+    "dimensions": [
+     "month"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "month": "2024-11",
+     "value": "1435.6093741851369"
+    },
+    {
+     "month": "2024-12",
+     "value": "1639.5384999999999"
+    },
+    {
+     "month": "2025-01",
+     "value": "1712.226047008547"
+    },
+    {
+     "month": "2025-02",
+     "value": "1485.1926903553301"
+    },
+    {
+     "month": "2025-03",
+     "value": "1712.903157894737"
+    },
+    {
+     "month": "2025-04",
+     "value": "1556.799979550102"
+    },
+    {
+     "month": "2025-05",
+     "value": "1569.4917021276597"
+    },
+    {
+     "month": "2025-06",
+     "value": "1571.8998190789473"
+    },
+    {
+     "month": "2025-07",
+     "value": "1513.2722857142858"
+    },
+    {
+     "month": "2025-08",
+     "value": "1549.0193687707642"
+    },
+    {
+     "month": "2025-09",
+     "value": "1507.2313277310925"
+    },
+    {
+     "month": "2025-10",
+     "value": "1679.976191780822"
+    },
+    {
+     "month": "2025-11",
+     "value": "1636.2921618852458"
+    },
+    {
+     "month": "2025-12",
+     "value": "1521.0401595214357"
+    },
+    {
+     "month": "2026-01",
+     "value": "1589.2125344827587"
+    },
+    {
+     "month": "2026-02",
+     "value": "1714.3849063670414"
+    },
+    {
+     "month": "2026-03",
+     "value": "1597.8397841726617"
+    },
+    {
+     "month": "2026-04",
+     "value": "1620.6635804195803"
+    },
+    {
+     "month": "2026-05",
+     "value": "1550.8271049840932"
+    },
+    {
+     "month": "2026-06",
+     "value": "1579.1467252195732"
+    },
+    {
+     "month": "2026-07",
+     "value": "1673.1345050761422"
+    },
+    {
+     "month": "2026-08",
+     "value": "1564.301417721519"
+    },
+    {
+     "month": "2026-09",
+     "value": "1537.6241717049577"
+    },
+    {
+     "month": "2026-10",
+     "value": "1568.572312703583"
+    }
+   ]
+  },
+  {
+   "id": "average_order_value.by_category",
+   "request": {
+    "metric": "average_order_value",
+    "dimensions": [
+     "category"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "category": "Automotivo",
+     "value": "444.7299384787472"
+    },
+    {
+     "category": "Beleza e Perfumaria",
+     "value": "262.37590859030837"
+    },
+    {
+     "category": "Brinquedos",
+     "value": "248.21586614173228"
+    },
+    {
+     "category": "Calçados",
+     "value": "469.0733975481611"
+    },
+    {
+     "category": "Cama, Mesa e Banho",
+     "value": "311.31835900473936"
+    },
+    {
+     "category": "Celulares e Acessórios",
+     "value": "217.60131447587352"
+    },
+    {
+     "category": "Decoração",
+     "value": "425.42580769230767"
+    },
+    {
+     "category": "Eletrodomésticos",
+     "value": "623.5858857142857"
+    },
+    {
+     "category": "Eletrônicos",
+     "value": "1005.1730348258707"
+    },
+    {
+     "category": "Esporte e Lazer",
+     "value": "954.3159691081215"
+    },
+    {
+     "category": "Ferramentas",
+     "value": "300.1907842046719"
+    },
+    {
+     "category": "Games",
+     "value": "2516.918379295715"
+    },
+    {
+     "category": "Informática",
+     "value": "1287.3448017408123"
+    },
+    {
+     "category": "Livros",
+     "value": "79.71956120092379"
+    },
+    {
+     "category": "Moda Feminina",
+     "value": "324.08615652173916"
+    },
+    {
+     "category": "Moda Masculina",
+     "value": "519.6453006329114"
+    },
+    {
+     "category": "Móveis",
+     "value": "2123.5774752475245"
+    },
+    {
+     "category": "Papelaria",
+     "value": "99.53759085580305"
+    },
+    {
+     "category": "Pet Shop",
+     "value": "198.00259237536656"
+    },
+    {
+     "category": "Saúde e Bem-estar",
+     "value": "263.9634478741992"
+    }
+   ]
+  },
+  {
+   "id": "average_order_value.by_payment_method",
+   "request": {
+    "metric": "average_order_value",
+    "dimensions": [
+     "payment_method"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "payment_method": "boleto",
+     "value": "1518.91895713108"
+    },
+    {
+     "payment_method": "credit_card",
+     "value": "1569.7265784168796"
+    },
+    {
+     "payment_method": "debit_card",
+     "value": "1487.919308478653"
+    },
+    {
+     "payment_method": "pix",
+     "value": "1671.9535184450615"
+    }
+   ]
+  },
+  {
+   "id": "average_order_value.by_order_status",
+   "request": {
+    "metric": "average_order_value",
+    "dimensions": [
+     "order_status"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "order_status": "paid",
+     "value": "1780.3884994916975"
+    },
+    {
+     "order_status": "refunded",
+     "value": "0"
+    }
+   ]
+  },
+  {
+   "id": "average_order_value.by_year",
+   "request": {
+    "metric": "average_order_value",
+    "dimensions": [
+     "year"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "year": 2024,
+     "value": "1535.747100199071"
+    },
+    {
+     "year": 2025,
+     "value": "1585.5573001799023"
+    },
+    {
+     "year": 2026,
+     "value": "1595.0095455169571"
+    }
+   ]
+  },
+  {
+   "id": "active_customers.by_total",
+   "request": {
+    "metric": "active_customers",
+    "dimensions": [],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "value": "1424"
+    }
+   ]
+  },
+  {
+   "id": "active_customers.by_region",
+   "request": {
+    "metric": "active_customers",
+    "dimensions": [
+     "region"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "region": "Centro-Oeste",
+     "value": "139"
+    },
+    {
+     "region": "Nordeste",
+     "value": "285"
+    },
+    {
+     "region": "Norte",
+     "value": "81"
+    },
+    {
+     "region": "Sudeste",
+     "value": "708"
+    },
+    {
+     "region": "Sul",
+     "value": "211"
+    }
+   ]
+  },
+  {
+   "id": "active_customers.by_segment",
+   "request": {
+    "metric": "active_customers",
+    "dimensions": [
+     "segment"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "segment": "Corporativo",
+     "value": "152"
+    },
+    {
+     "segment": "Pequena Empresa",
+     "value": "244"
+    },
+    {
+     "segment": "Premium",
+     "value": "300"
+    },
+    {
+     "segment": "Varejo",
+     "value": "728"
+    }
+   ]
+  },
+  {
+   "id": "cancellation_rate.by_total",
+   "request": {
+    "metric": "cancellation_rate",
+    "dimensions": [],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "value": "0.1169"
+    }
+   ]
+  },
+  {
+   "id": "cancellation_rate.by_region",
+   "request": {
+    "metric": "cancellation_rate",
+    "dimensions": [
+     "region"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "region": "Centro-Oeste",
+     "value": "0.11991657977059438"
+    },
+    {
+     "region": "Nordeste",
+     "value": "0.11738261738261738"
+    },
+    {
+     "region": "Norte",
+     "value": "0.10557184750733138"
+    },
+    {
+     "region": "Sudeste",
+     "value": "0.11751198083067092"
+    },
+    {
+     "region": "Sul",
+     "value": "0.11615663047054953"
+    }
+   ]
+  },
+  {
+   "id": "cancellation_rate.by_segment",
+   "request": {
+    "metric": "cancellation_rate",
+    "dimensions": [
+     "segment"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "segment": "Corporativo",
+     "value": "0.11630847029077118"
+    },
+    {
+     "segment": "Pequena Empresa",
+     "value": "0.1199426111908178"
+    },
+    {
+     "segment": "Premium",
+     "value": "0.121875"
+    },
+    {
+     "segment": "Varejo",
+     "value": "0.11364106810184227"
+    }
+   ]
+  },
+  {
+   "id": "cancellation_rate.by_month",
+   "request": {
+    "metric": "cancellation_rate",
+    "dimensions": [
+     "month"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "month": "2024-11",
+     "value": "0.1336206896551724"
+    },
+    {
+     "month": "2024-12",
+     "value": "0.12045454545454545"
+    },
+    {
+     "month": "2025-01",
+     "value": "0.12633451957295375"
+    },
+    {
+     "month": "2025-02",
+     "value": "0.14225941422594143"
+    },
+    {
+     "month": "2025-03",
+     "value": "0.11144130757800892"
+    },
+    {
+     "month": "2025-04",
+     "value": "0.13333333333333333"
+    },
+    {
+     "month": "2025-05",
+     "value": "0.1146067415730337"
+    },
+    {
+     "month": "2025-06",
+     "value": "0.1001410437235543"
+    },
+    {
+     "month": "2025-07",
+     "value": "0.13333333333333333"
+    },
+    {
+     "month": "2025-08",
+     "value": "0.125"
+    },
+    {
+     "month": "2025-09",
+     "value": "0.11673699015471167"
+    },
+    {
+     "month": "2025-10",
+     "value": "0.13068181818181818"
+    },
+    {
+     "month": "2025-11",
+     "value": "0.11871750433275563"
+    },
+    {
+     "month": "2025-12",
+     "value": "0.1265406737880033"
+    },
+    {
+     "month": "2026-01",
+     "value": "0.11290322580645161"
+    },
+    {
+     "month": "2026-02",
+     "value": "0.11464968152866242"
+    },
+    {
+     "month": "2026-03",
+     "value": "0.10294117647058823"
+    },
+    {
+     "month": "2026-04",
+     "value": "0.10357142857142858"
+    },
+    {
+     "month": "2026-05",
+     "value": "0.10247026532479414"
+    },
+    {
+     "month": "2026-06",
+     "value": "0.10515021459227468"
+    },
+    {
+     "month": "2026-07",
+     "value": "0.10691144708423327"
+    },
+    {
+     "month": "2026-08",
+     "value": "0.11945031712473574"
+    },
+    {
+     "month": "2026-09",
+     "value": "0.09989701338825953"
+    },
+    {
+     "month": "2026-10",
+     "value": "0.12159533073929961"
+    }
+   ]
+  },
+  {
+   "id": "cancellation_rate.by_payment_method",
+   "request": {
+    "metric": "cancellation_rate",
+    "dimensions": [
+     "payment_method"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "payment_method": "boleto",
+     "value": "0.12330163043478261"
+    },
+    {
+     "payment_method": "credit_card",
+     "value": "0.1160565260932458"
+    },
+    {
+     "payment_method": "debit_card",
+     "value": "0.11559541604384654"
+    },
+    {
+     "payment_method": "pix",
+     "value": "0.11547344110854503"
+    }
+   ]
+  },
+  {
+   "id": "cancellation_rate.by_year",
+   "request": {
+    "metric": "cancellation_rate",
+    "dimensions": [
+     "year"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "year": 2024,
+     "value": "0.12721238938053098"
+    },
+    {
+     "year": 2025,
+     "value": "0.12261521972132905"
+    },
+    {
+     "year": 2026,
+     "value": "0.10877905664635522"
+    }
+   ]
+  },
+  {
+   "id": "refund_amount.by_total",
+   "request": {
+    "metric": "refund_amount",
+    "dimensions": [],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "value": "4245603.19"
+    }
+   ]
+  },
+  {
+   "id": "refund_amount.by_region",
+   "request": {
+    "metric": "refund_amount",
+    "dimensions": [
+     "region"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "region": "Centro-Oeste",
+     "value": "402735.79"
+    },
+    {
+     "region": "Nordeste",
+     "value": "902267.26"
+    },
+    {
+     "region": "Norte",
+     "value": "210218.81"
+    },
+    {
+     "region": "Sudeste",
+     "value": "2105657.37"
+    },
+    {
+     "region": "Sul",
+     "value": "624723.96"
+    }
+   ]
+  },
+  {
+   "id": "refund_amount.by_segment",
+   "request": {
+    "metric": "refund_amount",
+    "dimensions": [
+     "segment"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "segment": "Corporativo",
+     "value": "980335.99"
+    },
+    {
+     "segment": "Pequena Empresa",
+     "value": "768272.14"
+    },
+    {
+     "segment": "Premium",
+     "value": "1353878.27"
+    },
+    {
+     "segment": "Varejo",
+     "value": "1143116.79"
+    }
+   ]
+  },
+  {
+   "id": "refund_amount.by_month",
+   "request": {
+    "metric": "refund_amount",
+    "dimensions": [
+     "month"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "month": "2024-11",
+     "value": "225930.61"
+    },
+    {
+     "month": "2024-12",
+     "value": "178071.41"
+    },
+    {
+     "month": "2025-01",
+     "value": "139090.01"
+    },
+    {
+     "month": "2025-02",
+     "value": "113598.98"
+    },
+    {
+     "month": "2025-03",
+     "value": "183108.10"
+    },
+    {
+     "month": "2025-04",
+     "value": "167569.81"
+    },
+    {
+     "month": "2025-05",
+     "value": "217029.54"
+    },
+    {
+     "month": "2025-06",
+     "value": "135478.21"
+    },
+    {
+     "month": "2025-07",
+     "value": "147420.69"
+    },
+    {
+     "month": "2025-08",
+     "value": "154287.74"
+    },
+    {
+     "month": "2025-09",
+     "value": "140422.86"
+    },
+    {
+     "month": "2025-10",
+     "value": "144094.28"
+    },
+    {
+     "month": "2025-11",
+     "value": "224851.15"
+    },
+    {
+     "month": "2025-12",
+     "value": "251176.82"
+    },
+    {
+     "month": "2026-01",
+     "value": "183940.03"
+    },
+    {
+     "month": "2026-02",
+     "value": "107346.26"
+    },
+    {
+     "month": "2026-03",
+     "value": "138724.05"
+    },
+    {
+     "month": "2026-04",
+     "value": "169162.44"
+    },
+    {
+     "month": "2026-05",
+     "value": "188556.94"
+    },
+    {
+     "month": "2026-06",
+     "value": "257245.96"
+    },
+    {
+     "month": "2026-07",
+     "value": "193306.21"
+    },
+    {
+     "month": "2026-08",
+     "value": "166582.48"
+    },
+    {
+     "month": "2026-09",
+     "value": "224567.31"
+    },
+    {
+     "month": "2026-10",
+     "value": "194041.30"
+    }
+   ]
+  },
+  {
+   "id": "refund_amount.by_category",
+   "request": {
+    "metric": "refund_amount",
+    "dimensions": [
+     "category"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "category": "Automotivo",
+     "value": "149325.27"
+    },
+    {
+     "category": "Beleza e Perfumaria",
+     "value": "83495.25"
+    },
+    {
+     "category": "Brinquedos",
+     "value": "68117.99"
+    },
+    {
+     "category": "Calçados",
+     "value": "137869.37"
+    },
+    {
+     "category": "Cama, Mesa e Banho",
+     "value": "89388.71"
+    },
+    {
+     "category": "Celulares e Acessórios",
+     "value": "58498.73"
+    },
+    {
+     "category": "Decoração",
+     "value": "119454.73"
+    },
+    {
+     "category": "Eletrodomésticos",
+     "value": "211534.67"
+    },
+    {
+     "category": "Eletrônicos",
+     "value": "327705.70"
+    },
+    {
+     "category": "Esporte e Lazer",
+     "value": "342681.95"
+    },
+    {
+     "category": "Ferramentas",
+     "value": "94644.27"
+    },
+    {
+     "category": "Games",
+     "value": "858289.88"
+    },
+    {
+     "category": "Informática",
+     "value": "404683.65"
+    },
+    {
+     "category": "Livros",
+     "value": "25065.52"
+    },
+    {
+     "category": "Moda Feminina",
+     "value": "85491.88"
+    },
+    {
+     "category": "Moda Masculina",
+     "value": "164075.81"
+    },
+    {
+     "category": "Móveis",
+     "value": "874159.20"
+    },
+    {
+     "category": "Papelaria",
+     "value": "28662.07"
+    },
+    {
+     "category": "Pet Shop",
+     "value": "54218.78"
+    },
+    {
+     "category": "Saúde e Bem-estar",
+     "value": "68239.76"
+    }
+   ]
+  },
+  {
+   "id": "refund_amount.by_payment_method",
+   "request": {
+    "metric": "refund_amount",
+    "dimensions": [
+     "payment_method"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "payment_method": "boleto",
+     "value": "556844.61"
+    },
+    {
+     "payment_method": "credit_card",
+     "value": "1913376.33"
+    },
+    {
+     "payment_method": "debit_card",
+     "value": "454472.09"
+    },
+    {
+     "payment_method": "pix",
+     "value": "1320910.16"
+    }
+   ]
+  },
+  {
+   "id": "refund_amount.by_order_status",
+   "request": {
+    "metric": "refund_amount",
+    "dimensions": [
+     "order_status"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "order_status": "paid",
+     "value": "898288.79"
+    },
+    {
+     "order_status": "refunded",
+     "value": "3347314.40"
+    }
+   ]
+  },
+  {
+   "id": "refund_amount.by_year",
+   "request": {
+    "metric": "refund_amount",
+    "dimensions": [
+     "year"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "year": 2024,
+     "value": "404002.02"
+    },
+    {
+     "year": 2025,
+     "value": "2018128.19"
+    },
+    {
+     "year": 2026,
+     "value": "1823472.98"
+    }
+   ]
+  },
+  {
+   "id": "monthly_revenue_growth.by_month",
+   "request": {
+    "metric": "monthly_revenue_growth",
+    "dimensions": [
+     "month"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "month": "2024-11",
+     "value": null
+    },
+    {
+     "month": "2024-12",
+     "value": "0.10184800481629308"
+    },
+    {
+     "month": "2025-01",
+     "value": "-0.33952921277311643"
+    },
+    {
+     "month": "2025-02",
+     "value": "-0.26974914784234183"
+    },
+    {
+     "month": "2025-03",
+     "value": "0.6685093349250415"
+    },
+    {
+     "month": "2025-04",
+     "value": "-0.2202883726284749"
+    },
+    {
+     "month": "2025-05",
+     "value": "0.5503694005843014"
+    },
+    {
+     "month": "2025-06",
+     "value": "-0.190248840219445"
+    },
+    {
+     "month": "2025-07",
+     "value": "-0.057881350392824715"
+    },
+    {
+     "month": "2025-08",
+     "value": "0.035664989602753217"
+    },
+    {
+     "month": "2025-09",
+     "value": "-0.038291313786497416"
+    },
+    {
+     "month": "2025-10",
+     "value": "0.36750558629042396"
+    },
+    {
+     "month": "2025-11",
+     "value": "0.3022209577627575"
+    },
+    {
+     "month": "2025-12",
+     "value": "-0.04471942653984251"
+    },
+    {
+     "month": "2026-01",
+     "value": "-0.3958171943626131"
+    },
+    {
+     "month": "2026-02",
+     "value": "-0.006793355811537394"
+    },
+    {
+     "month": "2026-03",
+     "value": "0.21302134612129908"
+    },
+    {
+     "month": "2026-04",
+     "value": "0.04347219152405102"
+    },
+    {
+     "month": "2026-05",
+     "value": "0.2620488373552865"
+    },
+    {
+     "month": "2026-06",
+     "value": "-0.13939130459280258"
+    },
+    {
+     "month": "2026-07",
+     "value": "0.047553634137852185"
+    },
+    {
+     "month": "2026-08",
+     "value": "-0.06267444659689503"
+    },
+    {
+     "month": "2026-09",
+     "value": "0.028982945855266173"
+    },
+    {
+     "month": "2026-10",
+     "value": "-0.24261411189968562"
+    }
+   ]
+  },
+  {
+   "id": "gross_revenue.by_product",
+   "request": {
+    "metric": "gross_revenue",
+    "dimensions": [
+     "product"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "product": "Película Ultra 10",
+     "value": "74961.80"
+    },
+    {
+     "product": "Ração Lite 9",
+     "value": "2016.00"
+    },
+    {
+     "product": "Furadeira Eco 9",
+     "value": "31374.70"
+    },
+    {
+     "product": "Caixa de Som Eco 23",
+     "value": "71361.30"
+    },
+    {
+     "product": "Pneu Max 23",
+     "value": "53434.90"
+    },
+    {
+     "product": "Caderno Plus 17",
+     "value": "2511.00"
+    },
+    {
+     "product": "Romance Lite 17",
+     "value": "6387.20"
+    },
+    {
+     "product": "Som Automotivo Lite 20",
+     "value": "4567.10"
+    },
+    {
+     "product": "Ração Prime 21",
+     "value": "16451.70"
+    },
+    {
+     "product": "Ração Classic 5",
+     "value": "12969.00"
+    },
+    {
+     "product": "Vitamina Smart 21",
+     "value": "63048.30"
+    },
+    {
+     "product": "Carrinho Prime 23",
+     "value": "10224.00"
+    },
+    {
+     "product": "Smartwatch Ultra 24",
+     "value": "41695.50"
+    },
+    {
+     "product": "Carregador Plus 14",
+     "value": "11653.20"
+    },
+    {
+     "product": "Cafeteira Classic 2",
+     "value": "22563.80"
+    },
+    {
+     "product": "Pneu Classic 19",
+     "value": "38913.00"
+    },
+    {
+     "product": "Caderno Lite 9",
+     "value": "14435.10"
+    },
+    {
+     "product": "Jaqueta Prime 23",
+     "value": "8566.80"
+    },
+    {
+     "product": "Romance Eco 9",
+     "value": "6566.00"
+    },
+    {
+     "product": "Balança Max 24",
+     "value": "56184.60"
+    },
+    {
+     "product": "Aspirador Plus 4",
+     "value": "62100.00"
+    },
+    {
+     "product": "Romance Eco 25",
+     "value": "6943.00"
+    },
+    {
+     "product": "Coleira Ultra 18",
+     "value": "3465.00"
+    },
+    {
+     "product": "Hidratante Essencial 14",
+     "value": "20678.90"
+    },
+    {
+     "product": "Vitamina Ultra 5",
+     "value": "64008.90"
+    },
+    {
+     "product": "Jogo Digital Lite 23",
+     "value": "424732.00"
+    },
+    {
+     "product": "Cafeteira Pro 10",
+     "value": "25207.00"
+    },
+    {
+     "product": "Agenda Smart 16",
+     "value": "5252.80"
+    },
+    {
+     "product": "Quebra-cabeça Plus 14",
+     "value": "59826.40"
+    },
+    {
+     "product": "Boneca Max 9",
+     "value": "4502.10"
+    },
+    {
+     "product": "Balança Ultra 4",
+     "value": "4775.40"
+    },
+    {
+     "product": "Suporte Veicular Ultra 4",
+     "value": "2300.00"
+    },
+    {
+     "product": "Perfume Classic 21",
+     "value": "4290.00"
+    },
+    {
+     "product": "Vitamina Pro 13",
+     "value": "3080.00"
+    },
+    {
+     "product": "Vitamina Ultra 17",
+     "value": "24252.00"
+    },
+    {
+     "product": "Jogo de Cama Ultra 1",
+     "value": "21353.00"
+    },
+    {
+     "product": "Ração Plus 13",
+     "value": "22632.90"
+    },
+    {
+     "product": "Hub USB Max 10",
+     "value": "14000.70"
+    },
+    {
+     "product": "Biografia Essencial 22",
+     "value": "2926.70"
+    },
+    {
+     "product": "Cama Pet Ultra 23",
+     "value": "22150.70"
+    },
+    {
+     "product": "Cama Pet Plus 11",
+     "value": "8631.00"
+    },
+    {
+     "product": "Camisa Classic 13",
+     "value": "51723.70"
+    },
+    {
+     "product": "Monitor Lite 23",
+     "value": "10068.80"
+    },
+    {
+     "product": "Console Eco 5",
+     "value": "134978.90"
+    },
+    {
+     "product": "Estante Eco 25",
+     "value": "93327.90"
+    },
+    {
+     "product": "Bolsa Pro 8",
+     "value": "10752.30"
+    },
+    {
+     "product": "Quebra-cabeça Pro 10",
+     "value": "3354.00"
+    },
+    {
+     "product": "Poltrona Smart 12",
+     "value": "38747.70"
+    },
+    {
+     "product": "Brinquedo Pet Ultra 12",
+     "value": "5688.60"
+    },
+    {
+     "product": "Carrinho Max 19",
+     "value": "13809.60"
+    },
+    {
+     "product": "Quebra-cabeça Essencial 6",
+     "value": "2528.90"
+    },
+    {
+     "product": "Chave de Fenda Prime 14",
+     "value": "15458.00"
+    },
+    {
+     "product": "Console Classic 13",
+     "value": "52104.00"
+    },
+    {
+     "product": "Console Max 21",
+     "value": "11992.20"
+    },
+    {
+     "product": "Luminária Max 19",
+     "value": "110142.00"
+    },
+    {
+     "product": "Liquidificador Plus 25",
+     "value": "54896.40"
+    },
+    {
+     "product": "Massageador Plus 14",
+     "value": "7799.00"
+    },
+    {
+     "product": "Edredom Smart 15",
+     "value": "9936.00"
+    },
+    {
+     "product": "Capa de Banco Essencial 5",
+     "value": "5488.00"
+    },
+    {
+     "product": "HQ Eco 24",
+     "value": "8051.20"
+    },
+    {
+     "product": "Mochila Eco 15",
+     "value": "3136.50"
+    },
+    {
+     "product": "Bola Pro 24",
+     "value": "305088.00"
+    },
+    {
+     "product": "Cabo Classic 15",
+     "value": "10101.90"
+    },
+    {
+     "product": "Capa de Banco Essencial 1",
+     "value": "22661.10"
+    },
+    {
+     "product": "Luminária Plus 11",
+     "value": "86982.60"
+    },
+    {
+     "product": "Sandália Lite 14",
+     "value": "62303.60"
+    },
+    {
+     "product": "Headset Gamer Max 8",
+     "value": "72057.70"
+    },
+    {
+     "product": "Poltrona Ultra 24",
+     "value": "294252.00"
+    },
+    {
+     "product": "Bolsa Max 16",
+     "value": "23988.00"
+    },
+    {
+     "product": "Saia Classic 19",
+     "value": "15648.40"
+    },
+    {
+     "product": "Camisa Max 25",
+     "value": "8384.00"
+    },
+    {
+     "product": "Sapato Lite 21",
+     "value": "3986.50"
+    },
+    {
+     "product": "Travesseiro Eco 24",
+     "value": "7766.90"
+    },
+    {
+     "product": "Agenda Lite 4",
+     "value": "4444.00"
+    },
+    {
+     "product": "Jaqueta Eco 15",
+     "value": "58776.00"
+    },
+    {
+     "product": "Quadro Max 13",
+     "value": "4294.50"
+    },
+    {
+     "product": "Estante Pro 5",
+     "value": "598509.00"
+    },
+    {
+     "product": "Sandália Plus 6",
+     "value": "47680.00"
+    },
+    {
+     "product": "Pneu Prime 15",
+     "value": "160002.00"
+    },
+    {
+     "product": "Coleira Plus 10",
+     "value": "30076.00"
+    },
+    {
+     "product": "Poltrona Ultra 20",
+     "value": "463657.60"
+    },
+    {
+     "product": "Cafeteira Lite 22",
+     "value": "19899.00"
+    },
+    {
+     "product": "Biografia Prime 14",
+     "value": "2416.70"
+    },
+    {
+     "product": "Película Plus 6",
+     "value": "6390.00"
+    },
+    {
+     "product": "Tênis de Corrida Essencial 3",
+     "value": "270180.70"
+    },
+    {
+     "product": "Caderno Prime 21",
+     "value": "5949.80"
+    },
+    {
+     "product": "Cadeira Lite 18",
+     "value": "727929.00"
+    },
+    {
+     "product": "Vestido Essencial 5",
+     "value": "13285.80"
+    },
+    {
+     "product": "Capa de Banco Prime 21",
+     "value": "11245.10"
+    },
+    {
+     "product": "Trena Pro 16",
+     "value": "4548.00"
+    },
+    {
+     "product": "Halter Prime 18",
+     "value": "51504.00"
+    },
+    {
+     "product": "Furadeira Ultra 13",
+     "value": "29232.00"
+    },
+    {
+     "product": "Livro Técnico Pro 15",
+     "value": "9720.00"
+    },
+    {
+     "product": "Jogo de Tabuleiro Pro 20",
+     "value": "5152.00"
+    },
+    {
+     "product": "Vitamina Lite 1",
+     "value": "9744.00"
+    },
+    {
+     "product": "Agenda Eco 20",
+     "value": "1344.70"
+    },
+    {
+     "product": "Trena Prime 24",
+     "value": "11437.40"
+    },
+    {
+     "product": "Smartwatch Essencial 16",
+     "value": "77784.00"
+    },
+    {
+     "product": "Capa de Banco Essencial 17",
+     "value": "183362.70"
+    },
+    {
+     "product": "Coleira Prime 2",
+     "value": "9996.90"
+    },
+    {
+     "product": "Caneta Essencial 22",
+     "value": "22932.00"
+    },
+    {
+     "product": "Chave de Fenda Plus 18",
+     "value": "11544.00"
+    },
+    {
+     "product": "Caixa de Som Lite 3",
+     "value": "42182.30"
+    },
+    {
+     "product": "Capa de Banco Max 9",
+     "value": "34068.00"
+    },
+    {
+     "product": "Jogo Digital Ultra 3",
+     "value": "389364.00"
+    },
+    {
+     "product": "HQ Ultra 20",
+     "value": "5432.00"
+    },
+    {
+     "product": "Controle Prime 18",
+     "value": "152628.00"
+    },
+    {
+     "product": "Shampoo Pro 20",
+     "value": "48960.00"
+    },
+    {
+     "product": "Headset Gamer Essencial 12",
+     "value": "18818.00"
+    },
+    {
+     "product": "Aspirador Automotivo Ultra 2",
+     "value": "25441.00"
+    },
+    {
+     "product": "Smartwatch Plus 20",
+     "value": "171666.90"
+    },
+    {
+     "product": "Webcam Essencial 19",
+     "value": "438900.00"
+    },
+    {
+     "product": "Hub USB Smart 15",
+     "value": "14000.00"
+    },
+    {
+     "product": "Mesa Essencial 15",
+     "value": "64403.80"
+    },
+    {
+     "product": "Mesa Smart 3",
+     "value": "186016.50"
+    },
+    {
+     "product": "Termômetro Max 15",
+     "value": "22054.20"
+    },
+    {
+     "product": "Jaqueta Prime 3",
+     "value": "35319.90"
+    },
+    {
+     "product": "Tênis de Corrida Eco 7",
+     "value": "129748.00"
+    },
+    {
+     "product": "Vestido Eco 13",
+     "value": "35596.10"
+    },
+    {
+     "product": "Massageador Max 6",
+     "value": "6037.90"
+    },
+    {
+     "product": "Suporte Veicular Smart 16",
+     "value": "3696.00"
+    },
+    {
+     "product": "Hub USB Plus 25",
+     "value": "24318.00"
+    },
+    {
+     "product": "Tapete Ultra 8",
+     "value": "4865.00"
+    },
+    {
+     "product": "Pneu Ultra 7",
+     "value": "4971.40"
+    },
+    {
+     "product": "Caderno Pro 13",
+     "value": "3651.90"
+    },
+    {
+     "product": "Webcam Ultra 14",
+     "value": "54383.70"
+    },
+    {
+     "product": "Smartwatch Pro 12",
+     "value": "159538.50"
+    },
+    {
+     "product": "Edredom Eco 11",
+     "value": "50710.00"
+    },
+    {
+     "product": "Romance Lite 5",
+     "value": "5873.90"
+    },
+    {
+     "product": "Boneca Lite 25",
+     "value": "25418.00"
+    },
+    {
+     "product": "Controle Pro 22",
+     "value": "37376.00"
+    },
+    {
+     "product": "Jaqueta Prime 7",
+     "value": "9628.00"
+    },
+    {
+     "product": "Livro Técnico Max 3",
+     "value": "3496.50"
+    },
+    {
+     "product": "Liquidificador Plus 9",
+     "value": "22348.00"
+    },
+    {
+     "product": "Hub USB Prime 5",
+     "value": "126567.40"
+    },
+    {
+     "product": "Trena Max 8",
+     "value": "10155.60"
+    },
+    {
+     "product": "Vaso Essencial 14",
+     "value": "5166.00"
+    },
+    {
+     "product": "Controle Max 10",
+     "value": "7333.80"
+    },
+    {
+     "product": "HQ Eco 4",
+     "value": "2149.20"
+    },
+    {
+     "product": "Shampoo Pro 24",
+     "value": "29606.00"
+    },
+    {
+     "product": "Carrinho Plus 15",
+     "value": "3229.20"
+    },
+    {
+     "product": "Travesseiro Plus 20",
+     "value": "19413.90"
+    },
+    {
+     "product": "Balança Essencial 20",
+     "value": "68172.00"
+    },
+    {
+     "product": "Ração Lite 25",
+     "value": "41440.00"
+    },
+    {
+     "product": "Jogo Digital Eco 11",
+     "value": "1049154.90"
+    },
+    {
+     "product": "Mochila Max 19",
+     "value": "19360.40"
+    },
+    {
+     "product": "Sapato Prime 5",
+     "value": "14274.00"
+    },
+    {
+     "product": "Air Fryer Eco 15",
+     "value": "31003.00"
+    },
+    {
+     "product": "Blusa Ultra 14",
+     "value": "27690.00"
+    },
+    {
+     "product": "Batom Smart 15",
+     "value": "21612.50"
+    },
+    {
+     "product": "Saia Classic 7",
+     "value": "54360.00"
+    },
+    {
+     "product": "Mouse Classic 12",
+     "value": "9472.10"
+    },
+    {
+     "product": "Coleira Smart 6",
+     "value": "7068.20"
+    },
+    {
+     "product": "Furadeira Prime 5",
+     "value": "80920.00"
+    },
+    {
+     "product": "Monitor Eco 3",
+     "value": "446235.00"
+    },
+    {
+     "product": "Brinquedo Pet Classic 24",
+     "value": "20290.90"
+    },
+    {
+     "product": "Cabo Prime 23",
+     "value": "5738.50"
+    },
+    {
+     "product": "Estante Smart 17",
+     "value": "54797.80"
+    },
+    {
+     "product": "Agenda Pro 8",
+     "value": "3913.00"
+    },
+    {
+     "product": "Jogo de Tabuleiro Pro 12",
+     "value": "74478.70"
+    },
+    {
+     "product": "Aspirador Automotivo Essencial 18",
+     "value": "7129.80"
+    },
+    {
+     "product": "Cama Pet Ultra 7",
+     "value": "14406.00"
+    },
+    {
+     "product": "Termômetro Classic 19",
+     "value": "2409.00"
+    },
+    {
+     "product": "Console Essencial 1",
+     "value": "866376.00"
+    },
+    {
+     "product": "Saia Max 15",
+     "value": "7011.00"
+    },
+    {
+     "product": "Sandália Eco 2",
+     "value": "53487.50"
+    },
+    {
+     "product": "Air Fryer Max 3",
+     "value": "26264.00"
+    },
+    {
+     "product": "Serra Max 15",
+     "value": "37319.80"
+    },
+    {
+     "product": "Jogo de Tabuleiro Classic 24",
+     "value": "13722.40"
+    },
+    {
+     "product": "Suporte Veicular Essencial 8",
+     "value": "3647.80"
+    },
+    {
+     "product": "Chinelo Ultra 20",
+     "value": "10304.00"
+    },
+    {
+     "product": "Bermuda Pro 4",
+     "value": "72419.00"
+    },
+    {
+     "product": "Calça Plus 18",
+     "value": "119756.00"
+    },
+    {
+     "product": "Estante Pro 1",
+     "value": "193461.00"
+    },
+    {
+     "product": "Controle Pro 6",
+     "value": "91756.00"
+    },
+    {
+     "product": "Blusa Eco 6",
+     "value": "21156.00"
+    },
+    {
+     "product": "Cabo Prime 7",
+     "value": "4277.20"
+    },
+    {
+     "product": "Furadeira Classic 1",
+     "value": "3800.70"
+    },
+    {
+     "product": "Jaqueta Plus 19",
+     "value": "10767.00"
+    },
+    {
+     "product": "Capa Prime 1",
+     "value": "7714.20"
+    },
+    {
+     "product": "Saia Lite 23",
+     "value": "26406.10"
+    },
+    {
+     "product": "Perfume Classic 5",
+     "value": "37409.40"
+    },
+    {
+     "product": "Bermuda Ultra 8",
+     "value": "79503.90"
+    },
+    {
+     "product": "Carregador Eco 10",
+     "value": "16088.50"
+    },
+    {
+     "product": "Chinelo Eco 16",
+     "value": "13894.70"
+    },
+    {
+     "product": "Luminária Essencial 7",
+     "value": "13886.00"
+    },
+    {
+     "product": "Vaso Ultra 22",
+     "value": "118303.00"
+    },
+    {
+     "product": "Serra Smart 7",
+     "value": "6016.00"
+    },
+    {
+     "product": "Tapete Classic 24",
+     "value": "37428.30"
+    },
+    {
+     "product": "Bota Eco 23",
+     "value": "10601.80"
+    },
+    {
+     "product": "Caixa de Som Essencial 15",
+     "value": "153714.00"
+    },
+    {
+     "product": "Jogo de Cama Prime 9",
+     "value": "26048.70"
+    },
+    {
+     "product": "Chave de Fenda Plus 10",
+     "value": "8691.20"
+    },
+    {
+     "product": "Bola Lite 12",
+     "value": "248415.40"
+    },
+    {
+     "product": "Serra Lite 23",
+     "value": "19842.40"
+    },
+    {
+     "product": "Shampoo Eco 16",
+     "value": "2250.00"
+    },
+    {
+     "product": "Capa Lite 13",
+     "value": "2863.30"
+    },
+    {
+     "product": "Cabo Eco 3",
+     "value": "27636.00"
+    },
+    {
+     "product": "Capa de Banco Essencial 25",
+     "value": "66437.20"
+    },
+    {
+     "product": "Carregador Max 2",
+     "value": "40537.10"
+    },
+    {
+     "product": "Headset Gamer Essencial 4",
+     "value": "10770.20"
+    },
+    {
+     "product": "Caneta Classic 2",
+     "value": "6683.30"
+    },
+    {
+     "product": "Headset Gamer Eco 16",
+     "value": "44843.40"
+    },
+    {
+     "product": "Som Automotivo Essencial 8",
+     "value": "83059.40"
+    },
+    {
+     "product": "Air Fryer Essencial 11",
+     "value": "17666.00"
+    },
+    {
+     "product": "Quadro Lite 1",
+     "value": "90145.00"
+    },
+    {
+     "product": "Cafeteira Prime 6",
+     "value": "22304.00"
+    },
+    {
+     "product": "Boneca Prime 1",
+     "value": "50076.00"
+    },
+    {
+     "product": "Aspirador Eco 12",
+     "value": "147536.10"
+    },
+    {
+     "product": "Cabo Max 19",
+     "value": "7257.00"
+    },
+    {
+     "product": "Bicicleta Ultra 13",
+     "value": "62481.60"
+    },
+    {
+     "product": "Carrinho Classic 7",
+     "value": "2978.50"
+    },
+    {
+     "product": "Jogo Digital Smart 15",
+     "value": "661478.40"
+    },
+    {
+     "product": "Bota Prime 19",
+     "value": "7199.70"
+    },
+    {
+     "product": "Edredom Plus 3",
+     "value": "76664.00"
+    },
+    {
+     "product": "Trena Max 12",
+     "value": "7830.00"
+    },
+    {
+     "product": "Biografia Essencial 10",
+     "value": "10682.10"
+    },
+    {
+     "product": "Halter Prime 2",
+     "value": "9254.70"
+    },
+    {
+     "product": "Mochila Lite 7",
+     "value": "4867.00"
+    },
+    {
+     "product": "Jogo de Cama Ultra 21",
+     "value": "5253.30"
+    },
+    {
+     "product": "Capa Pro 21",
+     "value": "54237.50"
+    },
+    {
+     "product": "Mouse Eco 7",
+     "value": "228463.00"
+    },
+    {
+     "product": "Brinquedo Pet Max 4",
+     "value": "22468.00"
+    },
+    {
+     "product": "Vestido Plus 9",
+     "value": "100150.30"
+    },
+    {
+     "product": "Jogo de Cama Prime 5",
+     "value": "11543.40"
+    },
+    {
+     "product": "Livro Técnico Prime 7",
+     "value": "22317.30"
+    },
+    {
+     "product": "Headset Gamer Essencial 24",
+     "value": "9746.10"
+    },
+    {
+     "product": "Ração Eco 1",
+     "value": "3850.00"
+    },
+    {
+     "product": "Air Fryer Eco 23",
+     "value": "22939.00"
+    },
+    {
+     "product": "Air Fryer Prime 7",
+     "value": "33973.50"
+    },
+    {
+     "product": "Tênis de Corrida Prime 11",
+     "value": "63757.10"
+    },
+    {
+     "product": "Hidratante Max 18",
+     "value": "15276.00"
+    },
+    {
+     "product": "Som Automotivo Prime 24",
+     "value": "4644.00"
+    },
+    {
+     "product": "Mochila Prime 11",
+     "value": "14148.00"
+    },
+    {
+     "product": "Bola Prime 20",
+     "value": "83575.80"
+    },
+    {
+     "product": "Sandália Essencial 10",
+     "value": "10497.60"
+    },
+    {
+     "product": "Quadro Ultra 9",
+     "value": "79513.50"
+    },
+    {
+     "product": "Travesseiro Pro 12",
+     "value": "25208.00"
+    },
+    {
+     "product": "Chave de Fenda Max 22",
+     "value": "114177.60"
+    },
+    {
+     "product": "Aspirador Essencial 20",
+     "value": "150192.00"
+    },
+    {
+     "product": "Serra Max 19",
+     "value": "16673.10"
+    },
+    {
+     "product": "Camisa Smart 17",
+     "value": "94832.50"
+    },
+    {
+     "product": "Estante Pro 13",
+     "value": "181938.30"
+    },
+    {
+     "product": "Controle Max 14",
+     "value": "753449.10"
+    },
+    {
+     "product": "Toalha Eco 2",
+     "value": "9718.00"
+    },
+    {
+     "product": "Mouse Smart 17",
+     "value": "16816.60"
+    },
+    {
+     "product": "Batom Smart 3",
+     "value": "5207.00"
+    },
+    {
+     "product": "Livro Técnico Lite 19",
+     "value": "8206.30"
+    },
+    {
+     "product": "Quadro Lite 25",
+     "value": "12639.00"
+    },
+    {
+     "product": "Massageador Lite 22",
+     "value": "16965.00"
+    },
+    {
+     "product": "Blusa Essencial 10",
+     "value": "8701.00"
+    },
+    {
+     "product": "Sapato Smart 17",
+     "value": "6328.00"
+    },
+    {
+     "product": "Edredom Classic 7",
+     "value": "9568.00"
+    },
+    {
+     "product": "Toalha Pro 22",
+     "value": "30487.50"
+    },
+    {
+     "product": "Perfume Lite 17",
+     "value": "46165.60"
+    },
+    {
+     "product": "Massageador Ultra 2",
+     "value": "8346.00"
+    },
+    {
+     "product": "Chinelo Lite 4",
+     "value": "95907.40"
+    },
+    {
+     "product": "Aspirador Plus 8",
+     "value": "131654.60"
+    },
+    {
+     "product": "Capa Prime 25",
+     "value": "6848.00"
+    },
+    {
+     "product": "Vestido Eco 21",
+     "value": "3750.00"
+    },
+    {
+     "product": "Carregador Classic 6",
+     "value": "10045.70"
+    },
+    {
+     "product": "Headset Gamer Pro 20",
+     "value": "1291589.10"
+    },
+    {
+     "product": "Webcam Essencial 9",
+     "value": "6396.00"
+    },
+    {
+     "product": "Calça Lite 22",
+     "value": "16472.00"
+    },
+    {
+     "product": "Toalha Lite 18",
+     "value": "26801.70"
+    },
+    {
+     "product": "Som Automotivo Plus 4",
+     "value": "11139.00"
+    },
+    {
+     "product": "Carrinho Lite 11",
+     "value": "33285.00"
+    },
+    {
+     "product": "Aspirador Automotivo Classic 14",
+     "value": "8546.80"
+    },
+    {
+     "product": "Batom Lite 23",
+     "value": "54496.20"
+    },
+    {
+     "product": "Suporte Veicular Ultra 12",
+     "value": "6486.60"
+    },
+    {
+     "product": "Poltrona Max 4",
+     "value": "135040.00"
+    },
+    {
+     "product": "Cadeira Plus 2",
+     "value": "43826.30"
+    },
+    {
+     "product": "Bolsa Smart 20",
+     "value": "66289.20"
+    },
+    {
+     "product": "Romance Smart 21",
+     "value": "10497.60"
+    },
+    {
+     "product": "Tapete Max 16",
+     "value": "4284.00"
+    },
+    {
+     "product": "Aspirador Automotivo Pro 22",
+     "value": "4706.90"
+    },
+    {
+     "product": "Liquidificador Eco 5",
+     "value": "128448.00"
+    },
+    {
+     "product": "Batom Pro 7",
+     "value": "5571.90"
+    },
+    {
+     "product": "Fone de Ouvido Plus 13",
+     "value": "58297.20"
+    },
+    {
+     "product": "Quebra-cabeça Prime 18",
+     "value": "17974.10"
+    },
+    {
+     "product": "Jogo de Cama Prime 13",
+     "value": "12293.50"
+    },
+    {
+     "product": "Aspirador Ultra 16",
+     "value": "127139.40"
+    },
+    {
+     "product": "Sapato Classic 25",
+     "value": "47148.00"
+    },
+    {
+     "product": "Liquidificador Smart 17",
+     "value": "18848.00"
+    },
+    {
+     "product": "Tênis de Corrida Eco 19",
+     "value": "176510.40"
+    },
+    {
+     "product": "Halter Essencial 22",
+     "value": "16099.90"
+    },
+    {
+     "product": "Webcam Eco 4",
+     "value": "12474.00"
+    },
+    {
+     "product": "Teclado Max 1",
+     "value": "8675.90"
+    },
+    {
+     "product": "Shampoo Essencial 4",
+     "value": "8556.00"
+    },
+    {
+     "product": "Perfume Smart 9",
+     "value": "55334.30"
+    },
+    {
+     "product": "Jogo Digital Prime 19",
+     "value": "17675.50"
+    },
+    {
+     "product": "Suporte Veicular Ultra 20",
+     "value": "2324.00"
+    },
+    {
+     "product": "Sapato Max 13",
+     "value": "6969.00"
+    },
+    {
+     "product": "Teclado Eco 16",
+     "value": "436007.10"
+    },
+    {
+     "product": "Travesseiro Pro 4",
+     "value": "19176.30"
+    },
+    {
+     "product": "Quebra-cabeça Classic 2",
+     "value": "47044.20"
+    },
+    {
+     "product": "Perfume Lite 25",
+     "value": "5428.00"
+    },
+    {
+     "product": "Capa Ultra 17",
+     "value": "4797.10"
+    },
+    {
+     "product": "Mochila Ultra 23",
+     "value": "9856.00"
+    },
+    {
+     "product": "Teclado Plus 6",
+     "value": "34688.10"
+    },
+    {
+     "product": "Bicicleta Smart 1",
+     "value": "4017.00"
+    },
+    {
+     "product": "Som Automotivo Essencial 12",
+     "value": "4761.90"
+    },
+    {
+     "product": "Shampoo Essencial 12",
+     "value": "3684.80"
+    },
+    {
+     "product": "Webcam Classic 24",
+     "value": "74800.20"
+    },
+    {
+     "product": "Carrinho Eco 3",
+     "value": "8250.00"
+    },
+    {
+     "product": "Trena Pro 4",
+     "value": "43550.00"
+    },
+    {
+     "product": "Halter Smart 6",
+     "value": "40203.90"
+    },
+    {
+     "product": "Edredom Prime 23",
+     "value": "4872.90"
+    },
+    {
+     "product": "Tapete Plus 12",
+     "value": "56832.80"
+    },
+    {
+     "product": "Calça Max 2",
+     "value": "78386.00"
+    },
+    {
+     "product": "Bola Smart 4",
+     "value": "5153.40"
+    },
+    {
+     "product": "Película Ultra 14",
+     "value": "31356.00"
+    },
+    {
+     "product": "Tênis de Corrida Eco 15",
+     "value": "257520.00"
+    },
+    {
+     "product": "Coleira Lite 14",
+     "value": "7485.10"
+    },
+    {
+     "product": "Furadeira Lite 25",
+     "value": "4964.00"
+    },
+    {
+     "product": "Perfume Max 13",
+     "value": "54096.00"
+    },
+    {
+     "product": "Monitor Prime 13",
+     "value": "157000.80"
+    },
+    {
+     "product": "Poltrona Pro 8",
+     "value": "93219.00"
+    },
+    {
+     "product": "Quebra-cabeça Classic 22",
+     "value": "9642.40"
+    },
+    {
+     "product": "Sandália Classic 18",
+     "value": "4725.00"
+    },
+    {
+     "product": "Boneca Essencial 5",
+     "value": "14740.00"
+    },
+    {
+     "product": "Brinquedo Pet Lite 16",
+     "value": "8012.20"
+    },
+    {
+     "product": "Jogo Digital Lite 7",
+     "value": "258087.90"
+    },
+    {
+     "product": "Mesa Classic 23",
+     "value": "34524.00"
+    },
+    {
+     "product": "Poltrona Lite 16",
+     "value": "286739.10"
+    },
+    {
+     "product": "Fone de Ouvido Essencial 5",
+     "value": "208156.90"
+    },
+    {
+     "product": "Chave de Fenda Max 2",
+     "value": "3444.00"
+    },
+    {
+     "product": "Termômetro Plus 23",
+     "value": "8933.40"
+    },
+    {
+     "product": "Suporte Veicular Prime 24",
+     "value": "40786.40"
+    },
+    {
+     "product": "Mesa Eco 11",
+     "value": "70704.00"
+    },
+    {
+     "product": "Batom Classic 11",
+     "value": "27249.80"
+    },
+    {
+     "product": "Halter Classic 10",
+     "value": "7859.70"
+    },
+    {
+     "product": "Hidratante Eco 22",
+     "value": "5148.00"
+    },
+    {
+     "product": "Vitamina Lite 9",
+     "value": "3087.60"
+    },
+    {
+     "product": "Aspirador Eco 24",
+     "value": "52717.00"
+    },
+    {
+     "product": "Caixa de Som Prime 19",
+     "value": "56301.00"
+    },
+    {
+     "product": "Vaso Ultra 6",
+     "value": "46618.60"
+    },
+    {
+     "product": "Termômetro Prime 7",
+     "value": "6343.70"
+    },
+    {
+     "product": "Console Pro 17",
+     "value": "20765.40"
+    },
+    {
+     "product": "Cabo Max 11",
+     "value": "6027.00"
+    },
+    {
+     "product": "Toalha Eco 10",
+     "value": "8915.70"
+    },
+    {
+     "product": "Caneta Ultra 10",
+     "value": "4211.20"
+    },
+    {
+     "product": "Quadro Ultra 17",
+     "value": "8968.00"
+    },
+    {
+     "product": "Massageador Plus 18",
+     "value": "36408.90"
+    },
+    {
+     "product": "Mochila Ultra 3",
+     "value": "22680.00"
+    },
+    {
+     "product": "Caneta Plus 6",
+     "value": "5663.70"
+    },
+    {
+     "product": "Blusa Essencial 2",
+     "value": "27709.00"
+    },
+    {
+     "product": "Capa de Banco Plus 13",
+     "value": "37250.30"
+    },
+    {
+     "product": "Agenda Eco 24",
+     "value": "1329.80"
+    },
+    {
+     "product": "Caixa de Som Plus 11",
+     "value": "219215.70"
+    },
+    {
+     "product": "Caneta Classic 14",
+     "value": "6357.00"
+    },
+    {
+     "product": "Boneca Classic 17",
+     "value": "5554.50"
+    },
+    {
+     "product": "Vestido Smart 17",
+     "value": "7250.00"
+    },
+    {
+     "product": "Vaso Lite 10",
+     "value": "7186.20"
+    },
+    {
+     "product": "Hub USB Smart 20",
+     "value": "212836.40"
+    },
+    {
+     "product": "Jogo de Cama Lite 25",
+     "value": "6648.90"
+    },
+    {
+     "product": "Brinquedo Pet Pro 20",
+     "value": "42449.40"
+    },
+    {
+     "product": "Bolsa Ultra 12",
+     "value": "18857.40"
+    },
+    {
+     "product": "Liquidificador Plus 1",
+     "value": "33161.70"
+    },
+    {
+     "product": "Teclado Classic 11",
+     "value": "170957.30"
+    },
+    {
+     "product": "Cafeteira Classic 18",
+     "value": "19140.00"
+    },
+    {
+     "product": "Jogo de Tabuleiro Plus 4",
+     "value": "34785.30"
+    },
+    {
+     "product": "Biografia Pro 6",
+     "value": "3248.00"
+    },
+    {
+     "product": "Cama Pet Pro 3",
+     "value": "16356.20"
+    },
+    {
+     "product": "Console Essencial 25",
+     "value": "116365.70"
+    },
+    {
+     "product": "Calça Essencial 14",
+     "value": "5035.00"
+    },
+    {
+     "product": "Carregador Pro 22",
+     "value": "71272.00"
+    },
+    {
+     "product": "Shampoo Lite 8",
+     "value": "2362.50"
+    },
+    {
+     "product": "Bermuda Smart 20",
+     "value": "80640.00"
+    },
+    {
+     "product": "Sapato Pro 9",
+     "value": "62866.90"
+    },
+    {
+     "product": "Toalha Essencial 6",
+     "value": "23528.00"
+    },
+    {
+     "product": "Massageador Plus 10",
+     "value": "24310.00"
+    },
+    {
+     "product": "Balança Smart 12",
+     "value": "5242.70"
+    },
+    {
+     "product": "Calça Prime 6",
+     "value": "61553.20"
+    },
+    {
+     "product": "Chinelo Smart 24",
+     "value": "38092.00"
+    },
+    {
+     "product": "Serra Max 3",
+     "value": "79625.00"
+    },
+    {
+     "product": "Vestido Plus 25",
+     "value": "8007.00"
+    },
+    {
+     "product": "Balança Classic 8",
+     "value": "11699.80"
+    },
+    {
+     "product": "Vitamina Eco 25",
+     "value": "23716.00"
+    },
+    {
+     "product": "Batom Essencial 19",
+     "value": "25419.00"
+    },
+    {
+     "product": "Luminária Eco 23",
+     "value": "8457.90"
+    },
+    {
+     "product": "Quadro Essencial 5",
+     "value": "62707.20"
+    },
+    {
+     "product": "Caderno Eco 25",
+     "value": "23865.00"
+    },
+    {
+     "product": "Cadeira Prime 14",
+     "value": "413693.70"
+    },
+    {
+     "product": "Blusa Essencial 22",
+     "value": "17871.00"
+    },
+    {
+     "product": "Bota Prime 3",
+     "value": "67962.00"
+    },
+    {
+     "product": "Jogo de Tabuleiro Lite 16",
+     "value": "24490.50"
+    },
+    {
+     "product": "Liquidificador Lite 13",
+     "value": "97729.10"
+    },
+    {
+     "product": "Tapete Prime 20",
+     "value": "41584.00"
+    },
+    {
+     "product": "Película Prime 18",
+     "value": "123840.00"
+    },
+    {
+     "product": "Boneca Ultra 21",
+     "value": "3456.00"
+    },
+    {
+     "product": "Blusa Lite 18",
+     "value": "10379.00"
+    },
+    {
+     "product": "Bota Plus 7",
+     "value": "10474.20"
+    },
+    {
+     "product": "Travesseiro Smart 16",
+     "value": "22298.50"
+    },
+    {
+     "product": "Bota Eco 15",
+     "value": "96840.00"
+    },
+    {
+     "product": "Chinelo Plus 8",
+     "value": "7024.50"
+    },
+    {
+     "product": "Furadeira Pro 17",
+     "value": "4035.00"
+    },
+    {
+     "product": "Bola Pro 8",
+     "value": "28410.40"
+    },
+    {
+     "product": "Cadeira Eco 22",
+     "value": "136320.10"
+    },
+    {
+     "product": "Camisa Classic 1",
+     "value": "20862.00"
+    },
+    {
+     "product": "Bota Prime 11",
+     "value": "27890.00"
+    },
+    {
+     "product": "Tênis de Corrida Essencial 23",
+     "value": "6237.50"
+    },
+    {
+     "product": "Mesa Max 19",
+     "value": "71129.70"
+    },
+    {
+     "product": "Boneca Essencial 13",
+     "value": "37592.00"
+    },
+    {
+     "product": "Livro Técnico Smart 23",
+     "value": "10857.00"
+    },
+    {
+     "product": "Termômetro Essencial 11",
+     "value": "5819.40"
+    },
+    {
+     "product": "Brinquedo Pet Ultra 8",
+     "value": "3114.40"
+    },
+    {
+     "product": "Sapato Ultra 1",
+     "value": "67574.00"
+    },
+    {
+     "product": "Bicicleta Ultra 25",
+     "value": "3552.00"
+    },
+    {
+     "product": "Livro Técnico Essencial 11",
+     "value": "2091.00"
+    },
+    {
+     "product": "Quadro Plus 21",
+     "value": "4976.40"
+    },
+    {
+     "product": "Fone de Ouvido Lite 1",
+     "value": "14638.80"
+    },
+    {
+     "product": "Furadeira Max 21",
+     "value": "57260.70"
+    },
+    {
+     "product": "Hidratante Eco 10",
+     "value": "13803.00"
+    },
+    {
+     "product": "Sandália Lite 22",
+     "value": "51676.30"
+    },
+    {
+     "product": "Air Fryer Max 19",
+     "value": "33726.00"
+    },
+    {
+     "product": "Capa Essencial 5",
+     "value": "2905.20"
+    },
+    {
+     "product": "Smartwatch Essencial 4",
+     "value": "19158.00"
+    },
+    {
+     "product": "Hidratante Classic 2",
+     "value": "3593.40"
+    },
+    {
+     "product": "Perfume Plus 1",
+     "value": "59601.60"
+    },
+    {
+     "product": "Aspirador Automotivo Pro 10",
+     "value": "121313.70"
+    },
+    {
+     "product": "Jogo de Cama Plus 17",
+     "value": "38646.30"
+    },
+    {
+     "product": "Carregador Prime 18",
+     "value": "25938.00"
+    },
+    {
+     "product": "Vestido Max 1",
+     "value": "67760.70"
+    },
+    {
+     "product": "Caixa de Som Plus 7",
+     "value": "128979.00"
+    },
+    {
+     "product": "HQ Plus 12",
+     "value": "9009.00"
+    },
+    {
+     "product": "Fone de Ouvido Lite 9",
+     "value": "50298.00"
+    },
+    {
+     "product": "Serra Smart 11",
+     "value": "10823.40"
+    },
+    {
+     "product": "Película Prime 2",
+     "value": "5909.40"
+    },
+    {
+     "product": "Fone de Ouvido Eco 21",
+     "value": "247825.50"
+    },
+    {
+     "product": "Bicicleta Ultra 17",
+     "value": "20155.00"
+    },
+    {
+     "product": "Caderno Max 5",
+     "value": "3808.00"
+    },
+    {
+     "product": "Romance Eco 13",
+     "value": "12432.00"
+    },
+    {
+     "product": "Tapete Max 4",
+     "value": "7339.50"
+    },
+    {
+     "product": "Pneu Eco 11",
+     "value": "5040.70"
+    },
+    {
+     "product": "Mouse Plus 2",
+     "value": "12864.00"
+    },
+    {
+     "product": "Coleira Max 22",
+     "value": "6900.00"
+    },
+    {
+     "product": "Biografia Plus 18",
+     "value": "3059.20"
+    },
+    {
+     "product": "Romance Classic 1",
+     "value": "3174.00"
+    },
+    {
+     "product": "Cama Pet Classic 15",
+     "value": "19205.00"
+    },
+    {
+     "product": "Bicicleta Ultra 21",
+     "value": "162775.20"
+    },
+    {
+     "product": "Estante Essencial 21",
+     "value": "54197.00"
+    },
+    {
+     "product": "Bicicleta Lite 9",
+     "value": "24179.40"
+    },
+    {
+     "product": "Termômetro Classic 3",
+     "value": "30323.20"
+    },
+    {
+     "product": "Travesseiro Smart 8",
+     "value": "28717.20"
+    },
+    {
+     "product": "Saia Pro 3",
+     "value": "12088.10"
+    },
+    {
+     "product": "Pneu Pro 3",
+     "value": "8480.00"
+    },
+    {
+     "product": "Chinelo Essencial 12",
+     "value": "115685.40"
+    },
+    {
+     "product": "Toalha Smart 14",
+     "value": "69023.90"
+    },
+    {
+     "product": "Bola Classic 16",
+     "value": "80340.00"
+    },
+    {
+     "product": "Cafeteira Eco 14",
+     "value": "34846.00"
+    },
+    {
+     "product": "Capa Eco 9",
+     "value": "4455.00"
+    },
+    {
+     "product": "Bolsa Essencial 4",
+     "value": "19706.40"
+    },
+    {
+     "product": "Luminária Plus 15",
+     "value": "29361.60"
+    },
+    {
+     "product": "Hidratante Smart 6",
+     "value": "4170.00"
+    },
+    {
+     "product": "Biografia Max 2",
+     "value": "2880.00"
+    },
+    {
+     "product": "HQ Plus 16",
+     "value": "2074.00"
+    },
+    {
+     "product": "Trena Plus 20",
+     "value": "13671.00"
+    },
+    {
+     "product": "Som Automotivo Prime 16",
+     "value": "26637.00"
+    },
+    {
+     "product": "Camisa Essencial 21",
+     "value": "43186.00"
+    },
+    {
+     "product": "Cadeira Eco 6",
+     "value": "86491.80"
+    },
+    {
+     "product": "Camisa Pro 5",
+     "value": "15000.00"
+    },
+    {
+     "product": "Mesa Classic 7",
+     "value": "631330.10"
+    },
+    {
+     "product": "Balança Essencial 16",
+     "value": "8704.00"
+    },
+    {
+     "product": "Caneta Ultra 18",
+     "value": "1885.00"
+    },
+    {
+     "product": "Bermuda Essencial 16",
+     "value": "28188.00"
+    },
+    {
+     "product": "Monitor Max 18",
+     "value": "22185.00"
+    },
+    {
+     "product": "Cadeira Max 10",
+     "value": "647402.00"
+    },
+    {
+     "product": "Cama Pet Plus 19",
+     "value": "4440.00"
+    },
+    {
+     "product": "Camisa Max 9",
+     "value": "18049.50"
+    },
+    {
+     "product": "HQ Classic 8",
+     "value": "2649.90"
+    },
+    {
+     "product": "Bermuda Eco 24",
+     "value": "74917.70"
+    },
+    {
+     "product": "Aspirador Automotivo Essencial 6",
+     "value": "11201.40"
+    },
+    {
+     "product": "Monitor Essencial 8",
+     "value": "326109.30"
+    },
+    {
+     "product": "Bermuda Smart 12",
+     "value": "80750.00"
+    },
+    {
+     "product": "Saia Essencial 11",
+     "value": "12342.00"
+    },
+    {
+     "product": "Agenda Classic 12",
+     "value": "1243.00"
+    },
+    {
+     "product": "Calça Ultra 10",
+     "value": "44151.80"
+    },
+    {
+     "product": "Jogo de Tabuleiro Smart 8",
+     "value": "3332.00"
+    },
+    {
+     "product": "Ração Lite 17",
+     "value": "40250.00"
+    },
+    {
+     "product": "Teclado Smart 21",
+     "value": "63708.20"
+    },
+    {
+     "product": "Vaso Essencial 2",
+     "value": "35477.00"
+    },
+    {
+     "product": "Halter Prime 14",
+     "value": "153080.00"
+    },
+    {
+     "product": "Bicicleta Ultra 5",
+     "value": "47895.00"
+    },
+    {
+     "product": "Fone de Ouvido Eco 25",
+     "value": "178447.10"
+    },
+    {
+     "product": "Caderno Classic 1",
+     "value": "4945.00"
+    },
+    {
+     "product": "Fone de Ouvido Plus 17",
+     "value": "166749.00"
+    },
+    {
+     "product": "Mouse Prime 22",
+     "value": "144985.10"
+    },
+    {
+     "product": "Vaso Plus 18",
+     "value": "9726.30"
+    },
+    {
+     "product": "Controle Eco 2",
+     "value": "118439.10"
+    },
+    {
+     "product": "Película Essencial 22",
+     "value": "4278.00"
+    },
+    {
+     "product": "Console Prime 9",
+     "value": "178785.10"
+    },
+    {
+     "product": "Luminária Essencial 3",
+     "value": "6845.30"
+    },
+    {
+     "product": "Chave de Fenda Smart 6",
+     "value": "7993.70"
+    },
+    {
+     "product": "Liquidificador Lite 21",
+     "value": "75635.90"
+    },
+    {
+     "product": "Estante Lite 9",
+     "value": "420053.60"
+    },
+    {
+     "product": "Jaqueta Ultra 11",
+     "value": "32455.30"
+    },
+    {
+     "product": "Smartwatch Essencial 8",
+     "value": "106560.30"
+    },
+    {
+     "product": "Bolsa Essencial 24",
+     "value": "27785.70"
+    },
+    {
+     "product": "Edredom Smart 19",
+     "value": "50300.50"
+    }
+   ]
+  },
+  {
+   "id": "monthly_revenue_growth.by_region_month",
+   "request": {
+    "metric": "monthly_revenue_growth",
+    "dimensions": [
+     "month",
+     "region"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "month": "2024-11",
+     "region": "Norte",
+     "value": null
+    },
+    {
+     "month": "2024-12",
+     "region": "Norte",
+     "value": "1.8764806246960832"
+    },
+    {
+     "month": "2025-01",
+     "region": "Norte",
+     "value": "-0.5971569298820818"
+    },
+    {
+     "month": "2025-02",
+     "region": "Norte",
+     "value": "0.43280972387187977"
+    },
+    {
+     "month": "2025-03",
+     "region": "Norte",
+     "value": "0.20699022108952758"
+    },
+    {
+     "month": "2025-04",
+     "region": "Norte",
+     "value": "-0.28688222059665536"
+    },
+    {
+     "month": "2025-05",
+     "region": "Norte",
+     "value": "0.18106416116613455"
+    },
+    {
+     "month": "2025-06",
+     "region": "Norte",
+     "value": "0.03733294784618324"
+    },
+    {
+     "month": "2025-07",
+     "region": "Norte",
+     "value": "0.211439595473784"
+    },
+    {
+     "month": "2025-08",
+     "region": "Norte",
+     "value": "-0.37635582369700016"
+    },
+    {
+     "month": "2025-09",
+     "region": "Norte",
+     "value": "0.24327748308863661"
+    },
+    {
+     "month": "2025-10",
+     "region": "Norte",
+     "value": "-0.29748633853324713"
+    },
+    {
+     "month": "2025-11",
+     "region": "Norte",
+     "value": "1.3336629907972406"
+    },
+    {
+     "month": "2025-12",
+     "region": "Norte",
+     "value": "-0.32017812488760666"
+    },
+    {
+     "month": "2026-01",
+     "region": "Norte",
+     "value": "-0.33134032607994124"
+    },
+    {
+     "month": "2026-02",
+     "region": "Norte",
+     "value": "0.36223853619714763"
+    },
+    {
+     "month": "2026-03",
+     "region": "Norte",
+     "value": "-0.5660260283004583"
+    },
+    {
+     "month": "2026-04",
+     "region": "Norte",
+     "value": "0.5244496234534275"
+    },
+    {
+     "month": "2026-05",
+     "region": "Norte",
+     "value": "-0.23814812726546697"
+    },
+    {
+     "month": "2026-06",
+     "region": "Norte",
+     "value": "1.5827150781275874"
+    },
+    {
+     "month": "2026-07",
+     "region": "Norte",
+     "value": "-0.4992673959123859"
+    },
+    {
+     "month": "2026-08",
+     "region": "Norte",
+     "value": "0.7710260971089127"
+    },
+    {
+     "month": "2026-09",
+     "region": "Norte",
+     "value": "-0.2537366813730887"
+    },
+    {
+     "month": "2026-10",
+     "region": "Norte",
+     "value": "0.1062367087216094"
+    },
+    {
+     "month": "2024-11",
+     "region": "Nordeste",
+     "value": null
+    },
+    {
+     "month": "2024-12",
+     "region": "Nordeste",
+     "value": "-0.056410502941898644"
+    },
+    {
+     "month": "2025-01",
+     "region": "Nordeste",
+     "value": "-0.20543158105178894"
+    },
+    {
+     "month": "2025-02",
+     "region": "Nordeste",
+     "value": "-0.2362669378092317"
+    },
+    {
+     "month": "2025-03",
+     "region": "Nordeste",
+     "value": "0.15161393483187324"
+    },
+    {
+     "month": "2025-04",
+     "region": "Nordeste",
+     "value": "0.34261227797176996"
+    },
+    {
+     "month": "2025-05",
+     "region": "Nordeste",
+     "value": "0.29232190158110316"
+    },
+    {
+     "month": "2025-06",
+     "region": "Nordeste",
+     "value": "-0.19557483602571424"
+    },
+    {
+     "month": "2025-07",
+     "region": "Nordeste",
+     "value": "-0.07140890733243332"
+    },
+    {
+     "month": "2025-08",
+     "region": "Nordeste",
+     "value": "0.026634879622059682"
+    },
+    {
+     "month": "2025-09",
+     "region": "Nordeste",
+     "value": "-0.04115623727335671"
+    },
+    {
+     "month": "2025-10",
+     "region": "Nordeste",
+     "value": "0.27609245428490303"
+    },
+    {
+     "month": "2025-11",
+     "region": "Nordeste",
+     "value": "0.4247827628744527"
+    },
+    {
+     "month": "2025-12",
+     "region": "Nordeste",
+     "value": "-0.2999049187795305"
+    },
+    {
+     "month": "2026-01",
+     "region": "Nordeste",
+     "value": "-0.23346284707495035"
+    },
+    {
+     "month": "2026-02",
+     "region": "Nordeste",
+     "value": "-0.019659639067827195"
+    },
+    {
+     "month": "2026-03",
+     "region": "Nordeste",
+     "value": "0.1780711050854904"
+    },
+    {
+     "month": "2026-04",
+     "region": "Nordeste",
+     "value": "0.10250279738747414"
+    },
+    {
+     "month": "2026-05",
+     "region": "Nordeste",
+     "value": "0.3864662807520647"
+    },
+    {
+     "month": "2026-06",
+     "region": "Nordeste",
+     "value": "-0.15828340356674098"
+    },
+    {
+     "month": "2026-07",
+     "region": "Nordeste",
+     "value": "-0.20623095711345263"
+    },
+    {
+     "month": "2026-08",
+     "region": "Nordeste",
+     "value": "-0.05715467349041092"
+    },
+    {
+     "month": "2026-09",
+     "region": "Nordeste",
+     "value": "0.24870232593123665"
+    },
+    {
+     "month": "2026-10",
+     "region": "Nordeste",
+     "value": "-0.28855852422377837"
+    },
+    {
+     "month": "2024-11",
+     "region": "Centro-Oeste",
+     "value": null
+    },
+    {
+     "month": "2024-12",
+     "region": "Centro-Oeste",
+     "value": "-0.4308415510220994"
+    },
+    {
+     "month": "2025-01",
+     "region": "Centro-Oeste",
+     "value": "0.18216881734650836"
+    },
+    {
+     "month": "2025-02",
+     "region": "Centro-Oeste",
+     "value": "-0.4920439198043993"
+    },
+    {
+     "month": "2025-03",
+     "region": "Centro-Oeste",
+     "value": "0.6652318123192056"
+    },
+    {
+     "month": "2025-04",
+     "region": "Centro-Oeste",
+     "value": "-0.38889589369732247"
+    },
+    {
+     "month": "2025-05",
+     "region": "Centro-Oeste",
+     "value": "1.5208830167678369"
+    },
+    {
+     "month": "2025-06",
+     "region": "Centro-Oeste",
+     "value": "-0.29016155922352804"
+    },
+    {
+     "month": "2025-07",
+     "region": "Centro-Oeste",
+     "value": "-0.21549972187854582"
+    },
+    {
+     "month": "2025-08",
+     "region": "Centro-Oeste",
+     "value": "0.7270964247386464"
+    },
+    {
+     "month": "2025-09",
+     "region": "Centro-Oeste",
+     "value": "-0.39647602672033966"
+    },
+    {
+     "month": "2025-10",
+     "region": "Centro-Oeste",
+     "value": "0.7130868928507637"
+    },
+    {
+     "month": "2025-11",
+     "region": "Centro-Oeste",
+     "value": "0.39432647953980204"
+    },
+    {
+     "month": "2025-12",
+     "region": "Centro-Oeste",
+     "value": "-0.15431258679839377"
+    },
+    {
+     "month": "2026-01",
+     "region": "Centro-Oeste",
+     "value": "-0.502623073141307"
+    },
+    {
+     "month": "2026-02",
+     "region": "Centro-Oeste",
+     "value": "0.6346514011393061"
+    },
+    {
+     "month": "2026-03",
+     "region": "Centro-Oeste",
+     "value": "0.3118461920074822"
+    },
+    {
+     "month": "2026-04",
+     "region": "Centro-Oeste",
+     "value": "-0.3970607042122759"
+    },
+    {
+     "month": "2026-05",
+     "region": "Centro-Oeste",
+     "value": "0.9020853520899501"
+    },
+    {
+     "month": "2026-06",
+     "region": "Centro-Oeste",
+     "value": "-0.28771126101735045"
+    },
+    {
+     "month": "2026-07",
+     "region": "Centro-Oeste",
+     "value": "0.01648557680109608"
+    },
+    {
+     "month": "2026-08",
+     "region": "Centro-Oeste",
+     "value": "-0.10012972394979702"
+    },
+    {
+     "month": "2026-09",
+     "region": "Centro-Oeste",
+     "value": "0.12436516665116426"
+    },
+    {
+     "month": "2026-10",
+     "region": "Centro-Oeste",
+     "value": "-0.45947516075683403"
+    },
+    {
+     "month": "2024-11",
+     "region": "Sudeste",
+     "value": null
+    },
+    {
+     "month": "2024-12",
+     "region": "Sudeste",
+     "value": "0.16999522512985754"
+    },
+    {
+     "month": "2025-01",
+     "region": "Sudeste",
+     "value": "-0.32690969513232604"
+    },
+    {
+     "month": "2025-02",
+     "region": "Sudeste",
+     "value": "-0.3736396793188548"
+    },
+    {
+     "month": "2025-03",
+     "region": "Sudeste",
+     "value": "1.1971517081216532"
+    },
+    {
+     "month": "2025-04",
+     "region": "Sudeste",
+     "value": "-0.3725336332778899"
+    },
+    {
+     "month": "2025-05",
+     "region": "Sudeste",
+     "value": "0.6225776551242874"
+    },
+    {
+     "month": "2025-06",
+     "region": "Sudeste",
+     "value": "-0.2566349987982429"
+    },
+    {
+     "month": "2025-07",
+     "region": "Sudeste",
+     "value": "0.059056895354478556"
+    },
+    {
+     "month": "2025-08",
+     "region": "Sudeste",
+     "value": "-0.005563953577153891"
+    },
+    {
+     "month": "2025-09",
+     "region": "Sudeste",
+     "value": "-0.01791407908857645"
+    },
+    {
+     "month": "2025-10",
+     "region": "Sudeste",
+     "value": "0.3838692318750483"
+    },
+    {
+     "month": "2025-11",
+     "region": "Sudeste",
+     "value": "0.23639988368321574"
+    },
+    {
+     "month": "2025-12",
+     "region": "Sudeste",
+     "value": "0.03189094506421175"
+    },
+    {
+     "month": "2026-01",
+     "region": "Sudeste",
+     "value": "-0.3807326662709357"
+    },
+    {
+     "month": "2026-02",
+     "region": "Sudeste",
+     "value": "-0.19689486569518555"
+    },
+    {
+     "month": "2026-03",
+     "region": "Sudeste",
+     "value": "0.4577856635396236"
+    },
+    {
+     "month": "2026-04",
+     "region": "Sudeste",
+     "value": "0.050842496597649944"
+    },
+    {
+     "month": "2026-05",
+     "region": "Sudeste",
+     "value": "0.21509825661564053"
+    },
+    {
+     "month": "2026-06",
+     "region": "Sudeste",
+     "value": "-0.12028621768741365"
+    },
+    {
+     "month": "2026-07",
+     "region": "Sudeste",
+     "value": "0.12313801824531301"
+    },
+    {
+     "month": "2026-08",
+     "region": "Sudeste",
+     "value": "-0.11156353184718815"
+    },
+    {
+     "month": "2026-09",
+     "region": "Sudeste",
+     "value": "0.009245451533146376"
+    },
+    {
+     "month": "2026-10",
+     "region": "Sudeste",
+     "value": "-0.25622118892464574"
+    },
+    {
+     "month": "2024-11",
+     "region": "Sul",
+     "value": null
+    },
+    {
+     "month": "2024-12",
+     "region": "Sul",
+     "value": "0.16118128351504635"
+    },
+    {
+     "month": "2025-01",
+     "region": "Sul",
+     "value": "-0.5739496019888759"
+    },
+    {
+     "month": "2025-02",
+     "region": "Sul",
+     "value": "0.04841040603387836"
+    },
+    {
+     "month": "2025-03",
+     "region": "Sul",
+     "value": "0.2146636201840293"
+    },
+    {
+     "month": "2025-04",
+     "region": "Sul",
+     "value": "-0.026877910228181534"
+    },
+    {
+     "month": "2025-05",
+     "region": "Sul",
+     "value": "0.5148350324451425"
+    },
+    {
+     "month": "2025-06",
+     "region": "Sul",
+     "value": "0.03032326732001578"
+    },
+    {
+     "month": "2025-07",
+     "region": "Sul",
+     "value": "-0.3388218983061979"
+    },
+    {
+     "month": "2025-08",
+     "region": "Sul",
+     "value": "0.06946221402279074"
+    },
+    {
+     "month": "2025-09",
+     "region": "Sul",
+     "value": "0.12349393246103624"
+    },
+    {
+     "month": "2025-10",
+     "region": "Sul",
+     "value": "0.5335430278080182"
+    },
+    {
+     "month": "2025-11",
+     "region": "Sul",
+     "value": "0.11054003577072047"
+    },
+    {
+     "month": "2025-12",
+     "region": "Sul",
+     "value": "0.25460937869843203"
+    },
+    {
+     "month": "2026-01",
+     "region": "Sul",
+     "value": "-0.523549907409379"
+    },
+    {
+     "month": "2026-02",
+     "region": "Sul",
+     "value": "0.21848350262599947"
+    },
+    {
+     "month": "2026-03",
+     "region": "Sul",
+     "value": "-0.09747931366547669"
+    },
+    {
+     "month": "2026-04",
+     "region": "Sul",
+     "value": "0.28728079197939715"
+    },
+    {
+     "month": "2026-05",
+     "region": "Sul",
+     "value": "0.06544170255370707"
+    },
+    {
+     "month": "2026-06",
+     "region": "Sul",
+     "value": "-0.2898226333135079"
+    },
+    {
+     "month": "2026-07",
+     "region": "Sul",
+     "value": "0.4709207354074225"
+    },
+    {
+     "month": "2026-08",
+     "region": "Sul",
+     "value": "-0.03376955415465355"
+    },
+    {
+     "month": "2026-09",
+     "region": "Sul",
+     "value": "-0.07642123971540504"
+    },
+    {
+     "month": "2026-10",
+     "region": "Sul",
+     "value": "-0.0928000421831141"
+    }
+   ]
+  },
+  {
+   "id": "monthly_revenue_growth.by_segment_month",
+   "request": {
+    "metric": "monthly_revenue_growth",
+    "dimensions": [
+     "month",
+     "segment"
+    ],
+    "filters": [],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "month": "2024-11",
+     "segment": "Corporativo",
+     "value": null
+    },
+    {
+     "month": "2024-12",
+     "segment": "Corporativo",
+     "value": "0.016361923450541882"
+    },
+    {
+     "month": "2025-01",
+     "segment": "Corporativo",
+     "value": "-0.42670752147609614"
+    },
+    {
+     "month": "2025-02",
+     "segment": "Corporativo",
+     "value": "-0.3873326088453134"
+    },
+    {
+     "month": "2025-03",
+     "segment": "Corporativo",
+     "value": "1.197794468664839"
+    },
+    {
+     "month": "2025-04",
+     "segment": "Corporativo",
+     "value": "-0.1966633898314265"
+    },
+    {
+     "month": "2025-05",
+     "segment": "Corporativo",
+     "value": "0.22331243735493023"
+    },
+    {
+     "month": "2025-06",
+     "segment": "Corporativo",
+     "value": "-0.06467924191233321"
+    },
+    {
+     "month": "2025-07",
+     "segment": "Corporativo",
+     "value": "-0.11649628629287367"
+    },
+    {
+     "month": "2025-08",
+     "segment": "Corporativo",
+     "value": "0.18090465985216864"
+    },
+    {
+     "month": "2025-09",
+     "segment": "Corporativo",
+     "value": "0.1353333416103042"
+    },
+    {
+     "month": "2025-10",
+     "segment": "Corporativo",
+     "value": "0.10256356376038522"
+    },
+    {
+     "month": "2025-11",
+     "segment": "Corporativo",
+     "value": "0.4933993176623468"
+    },
+    {
+     "month": "2025-12",
+     "segment": "Corporativo",
+     "value": "-0.030857798409933967"
+    },
+    {
+     "month": "2026-01",
+     "segment": "Corporativo",
+     "value": "-0.30499814139541315"
+    },
+    {
+     "month": "2026-02",
+     "segment": "Corporativo",
+     "value": "-0.23511125450737347"
+    },
+    {
+     "month": "2026-03",
+     "segment": "Corporativo",
+     "value": "-0.06273017773812384"
+    },
+    {
+     "month": "2026-04",
+     "segment": "Corporativo",
+     "value": "0.037575543529383415"
+    },
+    {
+     "month": "2026-05",
+     "segment": "Corporativo",
+     "value": "0.7835329126224997"
+    },
+    {
+     "month": "2026-06",
+     "segment": "Corporativo",
+     "value": "-0.30010187771048946"
+    },
+    {
+     "month": "2026-07",
+     "segment": "Corporativo",
+     "value": "0.42595848190701346"
+    },
+    {
+     "month": "2026-08",
+     "segment": "Corporativo",
+     "value": "-0.29259246744854994"
+    },
+    {
+     "month": "2026-09",
+     "segment": "Corporativo",
+     "value": "0.25195469689735783"
+    },
+    {
+     "month": "2026-10",
+     "segment": "Corporativo",
+     "value": "-0.06563062014404719"
+    },
+    {
+     "month": "2024-11",
+     "segment": "Pequena Empresa",
+     "value": null
+    },
+    {
+     "month": "2024-12",
+     "segment": "Pequena Empresa",
+     "value": "0.16529038009593"
+    },
+    {
+     "month": "2025-01",
+     "segment": "Pequena Empresa",
+     "value": "-0.2742194336769077"
+    },
+    {
+     "month": "2025-02",
+     "segment": "Pequena Empresa",
+     "value": "-0.3077670449796175"
+    },
+    {
+     "month": "2025-03",
+     "segment": "Pequena Empresa",
+     "value": "0.1839761775324278"
+    },
+    {
+     "month": "2025-04",
+     "segment": "Pequena Empresa",
+     "value": "0.36053333668277876"
+    },
+    {
+     "month": "2025-05",
+     "segment": "Pequena Empresa",
+     "value": "0.4774723689027549"
+    },
+    {
+     "month": "2025-06",
+     "segment": "Pequena Empresa",
+     "value": "-0.19893756175341992"
+    },
+    {
+     "month": "2025-07",
+     "segment": "Pequena Empresa",
+     "value": "-0.09514354516687462"
+    },
+    {
+     "month": "2025-08",
+     "segment": "Pequena Empresa",
+     "value": "-0.1875368797105862"
+    },
+    {
+     "month": "2025-09",
+     "segment": "Pequena Empresa",
+     "value": "-0.06459860799403672"
+    },
+    {
+     "month": "2025-10",
+     "segment": "Pequena Empresa",
+     "value": "0.8581150571523399"
+    },
+    {
+     "month": "2025-11",
+     "segment": "Pequena Empresa",
+     "value": "-0.009258745768176757"
+    },
+    {
+     "month": "2025-12",
+     "segment": "Pequena Empresa",
+     "value": "-0.19085281186919312"
+    },
+    {
+     "month": "2026-01",
+     "segment": "Pequena Empresa",
+     "value": "-0.14506146638674366"
+    },
+    {
+     "month": "2026-02",
+     "segment": "Pequena Empresa",
+     "value": "-0.1403628445622681"
+    },
+    {
+     "month": "2026-03",
+     "segment": "Pequena Empresa",
+     "value": "0.9124106887666557"
+    },
+    {
+     "month": "2026-04",
+     "segment": "Pequena Empresa",
+     "value": "-0.327709955058734"
+    },
+    {
+     "month": "2026-05",
+     "segment": "Pequena Empresa",
+     "value": "0.259861697837954"
+    },
+    {
+     "month": "2026-06",
+     "segment": "Pequena Empresa",
+     "value": "0.2409551406762891"
+    },
+    {
+     "month": "2026-07",
+     "segment": "Pequena Empresa",
+     "value": "-0.010291039420173842"
+    },
+    {
+     "month": "2026-08",
+     "segment": "Pequena Empresa",
+     "value": "-0.24641721738271227"
+    },
+    {
+     "month": "2026-09",
+     "segment": "Pequena Empresa",
+     "value": "0.02030526993961379"
+    },
+    {
+     "month": "2026-10",
+     "segment": "Pequena Empresa",
+     "value": "-0.300745002966636"
+    },
+    {
+     "month": "2024-11",
+     "segment": "Premium",
+     "value": null
+    },
+    {
+     "month": "2024-12",
+     "segment": "Premium",
+     "value": "0.0928656145695097"
+    },
+    {
+     "month": "2025-01",
+     "segment": "Premium",
+     "value": "-0.3264477808291294"
+    },
+    {
+     "month": "2025-02",
+     "segment": "Premium",
+     "value": "-0.24529481373664275"
+    },
+    {
+     "month": "2025-03",
+     "segment": "Premium",
+     "value": "0.8565873699768984"
+    },
+    {
+     "month": "2025-04",
+     "segment": "Premium",
+     "value": "-0.285547753585463"
+    },
+    {
+     "month": "2025-05",
+     "segment": "Premium",
+     "value": "0.3674003253877034"
+    },
+    {
+     "month": "2025-06",
+     "segment": "Premium",
+     "value": "-0.22274772255951303"
+    },
+    {
+     "month": "2025-07",
+     "segment": "Premium",
+     "value": "-0.1224757827029882"
+    },
+    {
+     "month": "2025-08",
+     "segment": "Premium",
+     "value": "0.2603004054764644"
+    },
+    {
+     "month": "2025-09",
+     "segment": "Premium",
+     "value": "-0.08750794612217949"
+    },
+    {
+     "month": "2025-10",
+     "segment": "Premium",
+     "value": "0.36204699430882137"
+    },
+    {
+     "month": "2025-11",
+     "segment": "Premium",
+     "value": "0.39319652642663616"
+    },
+    {
+     "month": "2025-12",
+     "segment": "Premium",
+     "value": "-0.0747263614082544"
+    },
+    {
+     "month": "2026-01",
+     "segment": "Premium",
+     "value": "-0.4943264417842731"
+    },
+    {
+     "month": "2026-02",
+     "segment": "Premium",
+     "value": "0.1978388021079187"
+    },
+    {
+     "month": "2026-03",
+     "segment": "Premium",
+     "value": "0.17157601828978297"
+    },
+    {
+     "month": "2026-04",
+     "segment": "Premium",
+     "value": "0.1420826565691946"
+    },
+    {
+     "month": "2026-05",
+     "segment": "Premium",
+     "value": "0.19381680446719818"
+    },
+    {
+     "month": "2026-06",
+     "segment": "Premium",
+     "value": "-0.19549680314023354"
+    },
+    {
+     "month": "2026-07",
+     "segment": "Premium",
+     "value": "-0.12946021904698968"
+    },
+    {
+     "month": "2026-08",
+     "segment": "Premium",
+     "value": "0.25261091531892443"
+    },
+    {
+     "month": "2026-09",
+     "segment": "Premium",
+     "value": "-0.1521234277470468"
+    },
+    {
+     "month": "2026-10",
+     "segment": "Premium",
+     "value": "-0.26106080171906265"
+    },
+    {
+     "month": "2024-11",
+     "segment": "Varejo",
+     "value": null
+    },
+    {
+     "month": "2024-12",
+     "segment": "Varejo",
+     "value": "0.16408598518135897"
+    },
+    {
+     "month": "2025-01",
+     "segment": "Varejo",
+     "value": "-0.31993449967221443"
+    },
+    {
+     "month": "2025-02",
+     "segment": "Varejo",
+     "value": "-0.19019531531517853"
+    },
+    {
+     "month": "2025-03",
+     "segment": "Varejo",
+     "value": "0.393265345603512"
+    },
+    {
+     "month": "2025-04",
+     "segment": "Varejo",
+     "value": "-0.4048113825058848"
+    },
+    {
+     "month": "2025-05",
+     "segment": "Varejo",
+     "value": "1.4070303289956807"
+    },
+    {
+     "month": "2025-06",
+     "segment": "Varejo",
+     "value": "-0.22369536042770344"
+    },
+    {
+     "month": "2025-07",
+     "segment": "Varejo",
+     "value": "0.08767570076510611"
+    },
+    {
+     "month": "2025-08",
+     "segment": "Varejo",
+     "value": "-0.1383594164511096"
+    },
+    {
+     "month": "2025-09",
+     "segment": "Varejo",
+     "value": "-0.09936999049775308"
+    },
+    {
+     "month": "2025-10",
+     "segment": "Varejo",
+     "value": "0.3768362764823836"
+    },
+    {
+     "month": "2025-11",
+     "segment": "Varejo",
+     "value": "0.2509630453657885"
+    },
+    {
+     "month": "2025-12",
+     "segment": "Varejo",
+     "value": "0.07570521850955769"
+    },
+    {
+     "month": "2026-01",
+     "segment": "Varejo",
+     "value": "-0.45876985025202033"
+    },
+    {
+     "month": "2026-02",
+     "segment": "Varejo",
+     "value": "0.09628608701288566"
+    },
+    {
+     "month": "2026-03",
+     "segment": "Varejo",
+     "value": "0.10133225616999075"
+    },
+    {
+     "month": "2026-04",
+     "segment": "Varejo",
+     "value": "0.26417011583186434"
+    },
+    {
+     "month": "2026-05",
+     "segment": "Varejo",
+     "value": "0.05914255590625683"
+    },
+    {
+     "month": "2026-06",
+     "segment": "Varejo",
+     "value": "-0.137322108883267"
+    },
+    {
+     "month": "2026-07",
+     "segment": "Varejo",
+     "value": "0.05178497286493777"
+    },
+    {
+     "month": "2026-08",
+     "segment": "Varejo",
+     "value": "-0.030423203480943628"
+    },
+    {
+     "month": "2026-09",
+     "segment": "Varejo",
+     "value": "0.1321510845006144"
+    },
+    {
+     "month": "2026-10",
+     "segment": "Varejo",
+     "value": "-0.3373297375415065"
+    }
+   ]
+  },
+  {
+   "id": "gross_revenue.oct2026_by_region",
+   "request": {
+    "metric": "gross_revenue",
+    "dimensions": [
+     "region"
+    ],
+    "filters": [],
+    "limit": 1000,
+    "date_from": "2026-10-01",
+    "date_to": "2026-10-31"
+   },
+   "rows": [
+    {
+     "region": "Norte",
+     "value": "71666.70"
+    },
+    {
+     "region": "Sul",
+     "value": "211707.70"
+    },
+    {
+     "region": "Centro-Oeste",
+     "value": "87943.10"
+    },
+    {
+     "region": "Nordeste",
+     "value": "233193.70"
+    },
+    {
+     "region": "Sudeste",
+     "value": "552633.50"
+    }
+   ]
+  },
+  {
+   "id": "net_revenue.games_by_month_2026",
+   "request": {
+    "metric": "net_revenue",
+    "dimensions": [
+     "month"
+    ],
+    "filters": [
+     {
+      "dimension": "category",
+      "op": "eq",
+      "value": "Games"
+     }
+    ],
+    "limit": 1000,
+    "date_from": "2026-01-01"
+   },
+   "rows": [
+    {
+     "month": "2026-01",
+     "value": "220977.11"
+    },
+    {
+     "month": "2026-02",
+     "value": "218107.00"
+    },
+    {
+     "month": "2026-03",
+     "value": "294281.33"
+    },
+    {
+     "month": "2026-04",
+     "value": "274555.98"
+    },
+    {
+     "month": "2026-05",
+     "value": "340832.29"
+    },
+    {
+     "month": "2026-06",
+     "value": "261585.68"
+    },
+    {
+     "month": "2026-07",
+     "value": "314297.19"
+    },
+    {
+     "month": "2026-08",
+     "value": "293817.98"
+    },
+    {
+     "month": "2026-09",
+     "value": "277102.80"
+    },
+    {
+     "month": "2026-10",
+     "value": "196567.47"
+    }
+   ]
+  },
+  {
+   "id": "active_customers.asof_2026_06_30_by_segment",
+   "request": {
+    "metric": "active_customers",
+    "dimensions": [
+     "segment"
+    ],
+    "filters": [],
+    "limit": 1000,
+    "date_to": "2026-06-30"
+   },
+   "rows": [
+    {
+     "segment": "Corporativo",
+     "value": "165"
+    },
+    {
+     "segment": "Pequena Empresa",
+     "value": "266"
+    },
+    {
+     "segment": "Premium",
+     "value": "308"
+    },
+    {
+     "segment": "Varejo",
+     "value": "789"
+    }
+   ]
+  },
+  {
+   "id": "order_count.pix_boleto_by_status",
+   "request": {
+    "metric": "order_count",
+    "dimensions": [
+     "order_status"
+    ],
+    "filters": [
+     {
+      "dimension": "payment_method",
+      "op": "in",
+      "value": [
+       "pix",
+       "boleto"
+      ]
+     }
+    ],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "order_status": "cancelled",
+     "value": "1063"
+    },
+    {
+     "order_status": "paid",
+     "value": "6657"
+    },
+    {
+     "order_status": "pending",
+     "value": "475"
+    },
+    {
+     "order_status": "refunded",
+     "value": "811"
+    }
+   ]
+  },
+  {
+   "id": "refund_amount.premium_by_category",
+   "request": {
+    "metric": "refund_amount",
+    "dimensions": [
+     "category"
+    ],
+    "filters": [
+     {
+      "dimension": "segment",
+      "op": "eq",
+      "value": "Premium"
+     }
+    ],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "category": "Automotivo",
+     "value": "23722.90"
+    },
+    {
+     "category": "Beleza e Perfumaria",
+     "value": "11442.46"
+    },
+    {
+     "category": "Brinquedos",
+     "value": "12458.58"
+    },
+    {
+     "category": "Calçados",
+     "value": "35399.90"
+    },
+    {
+     "category": "Cama, Mesa e Banho",
+     "value": "14346.59"
+    },
+    {
+     "category": "Celulares e Acessórios",
+     "value": "8126.70"
+    },
+    {
+     "category": "Decoração",
+     "value": "21191.56"
+    },
+    {
+     "category": "Eletrodomésticos",
+     "value": "55209.52"
+    },
+    {
+     "category": "Eletrônicos",
+     "value": "124597.78"
+    },
+    {
+     "category": "Esporte e Lazer",
+     "value": "95538.47"
+    },
+    {
+     "category": "Ferramentas",
+     "value": "20678.41"
+    },
+    {
+     "category": "Games",
+     "value": "367033.50"
+    },
+    {
+     "category": "Informática",
+     "value": "157098.09"
+    },
+    {
+     "category": "Livros",
+     "value": "3486.83"
+    },
+    {
+     "category": "Moda Feminina",
+     "value": "22391.85"
+    },
+    {
+     "category": "Moda Masculina",
+     "value": "32807.25"
+    },
+    {
+     "category": "Móveis",
+     "value": "329088.26"
+    },
+    {
+     "category": "Papelaria",
+     "value": "2849.03"
+    },
+    {
+     "category": "Pet Shop",
+     "value": "6245.23"
+    },
+    {
+     "category": "Saúde e Bem-estar",
+     "value": "10165.36"
+    }
+   ]
+  },
+  {
+   "id": "cancellation_rate.sul_by_month",
+   "request": {
+    "metric": "cancellation_rate",
+    "dimensions": [
+     "month"
+    ],
+    "filters": [
+     {
+      "dimension": "region",
+      "op": "eq",
+      "value": "Sul"
+     }
+    ],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "month": "2024-11",
+     "value": "0.12686567164179105"
+    },
+    {
+     "month": "2024-12",
+     "value": "0.13333333333333333"
+    },
+    {
+     "month": "2025-01",
+     "value": "0.13924050632911392"
+    },
+    {
+     "month": "2025-02",
+     "value": "0.12857142857142856"
+    },
+    {
+     "month": "2025-03",
+     "value": "0.14285714285714285"
+    },
+    {
+     "month": "2025-04",
+     "value": "0.12631578947368421"
+    },
+    {
+     "month": "2025-05",
+     "value": "0.12030075187969924"
+    },
+    {
+     "month": "2025-06",
+     "value": "0.11475409836065574"
+    },
+    {
+     "month": "2025-07",
+     "value": "0.1414141414141414"
+    },
+    {
+     "month": "2025-08",
+     "value": "0.11711711711711711"
+    },
+    {
+     "month": "2025-09",
+     "value": "0.1262135922330097"
+    },
+    {
+     "month": "2025-10",
+     "value": "0.14189189189189189"
+    },
+    {
+     "month": "2025-11",
+     "value": "0.0975609756097561"
+    },
+    {
+     "month": "2025-12",
+     "value": "0.11557788944723618"
+    },
+    {
+     "month": "2026-01",
+     "value": "0.08411214953271028"
+    },
+    {
+     "month": "2026-02",
+     "value": "0.11764705882352941"
+    },
+    {
+     "month": "2026-03",
+     "value": "0.09917355371900827"
+    },
+    {
+     "month": "2026-04",
+     "value": "0.06722689075630252"
+    },
+    {
+     "month": "2026-05",
+     "value": "0.08108108108108109"
+    },
+    {
+     "month": "2026-06",
+     "value": "0.12598425196850394"
+    },
+    {
+     "month": "2026-07",
+     "value": "0.09395973154362416"
+    },
+    {
+     "month": "2026-08",
+     "value": "0.17687074829931973"
+    },
+    {
+     "month": "2026-09",
+     "value": "0.07913669064748201"
+    },
+    {
+     "month": "2026-10",
+     "value": "0.1232876712328767"
+    }
+   ]
+  },
+  {
+   "id": "monthly_revenue_growth.sudeste_window",
+   "request": {
+    "metric": "monthly_revenue_growth",
+    "dimensions": [
+     "month"
+    ],
+    "filters": [
+     {
+      "dimension": "region",
+      "op": "eq",
+      "value": "Sudeste"
+     }
+    ],
+    "limit": 1000,
+    "date_from": "2026-09-01",
+    "date_to": "2026-10-31"
+   },
+   "rows": [
+    {
+     "month": "2026-09",
+     "value": "0.009245451533146376"
+    },
+    {
+     "month": "2026-10",
+     "value": "-0.25622118892464574"
+    }
+   ]
+  },
+  {
+   "id": "average_order_value.pix_by_category",
+   "request": {
+    "metric": "average_order_value",
+    "dimensions": [
+     "category"
+    ],
+    "filters": [
+     {
+      "dimension": "payment_method",
+      "op": "eq",
+      "value": "pix"
+     }
+    ],
+    "limit": 1000
+   },
+   "rows": [
+    {
+     "category": "Automotivo",
+     "value": "463.5472321428572"
+    },
+    {
+     "category": "Beleza e Perfumaria",
+     "value": "279.1577054794521"
+    },
+    {
+     "category": "Brinquedos",
+     "value": "253.75914338919927"
+    },
+    {
+     "category": "Calçados",
+     "value": "450.90815950920245"
+    },
+    {
+     "category": "Cama, Mesa e Banho",
+     "value": "290.0598613861386"
+    },
+    {
+     "category": "Celulares e Acessórios",
+     "value": "209.51692727272726"
+    },
+    {
+     "category": "Decoração",
+     "value": "417.6162969588551"
+    },
+    {
+     "category": "Eletrodomésticos",
+     "value": "644.6700663349917"
+    },
+    {
+     "category": "Eletrônicos",
+     "value": "1106.042261146497"
+    },
+    {
+     "category": "Esporte e Lazer",
+     "value": "1028.5236377952756"
+    },
+    {
+     "category": "Ferramentas",
+     "value": "294.32377622377624"
+    },
+    {
+     "category": "Games",
+     "value": "2602.7773218997363"
+    },
+    {
+     "category": "Informática",
+     "value": "1264.944250764526"
+    },
+    {
+     "category": "Livros",
+     "value": "82.44529750479846"
+    },
+    {
+     "category": "Moda Feminina",
+     "value": "317.1959272727273"
+    },
+    {
+     "category": "Moda Masculina",
+     "value": "517.3887609075044"
+    },
+    {
+     "category": "Móveis",
+     "value": "2212.2851742627345"
+    },
+    {
+     "category": "Papelaria",
+     "value": "100.12950884086443"
+    },
+    {
+     "category": "Pet Shop",
+     "value": "195.08531309297913"
+    },
+    {
+     "category": "Saúde e Bem-estar",
+     "value": "257.2021359223301"
+    }
+   ]
+  }
+ ]
+}

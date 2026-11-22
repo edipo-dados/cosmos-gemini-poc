@@ -1,0 +1,9 @@
+name: region
+business_name: "Região"
+description: "Região do cliente (Norte, Nordeste, Centro-Oeste, Sudeste, Sul)."
+type: categorical
+expression: "dr.region_name"
+requires_joins: [region]
+domain:
+  table: dim_region
+  column: region_name

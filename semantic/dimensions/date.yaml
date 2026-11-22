@@ -1,0 +1,6 @@
+name: date
+business_name: "Data"
+description: "Dia do pedido (data do pedido, `fact_orders.order_date`)."
+type: date
+expression: "o.order_date"
+requires_joins: []

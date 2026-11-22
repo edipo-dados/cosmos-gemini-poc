@@ -1,0 +1,9 @@
+name: payment_method
+business_name: "Forma de pagamento"
+description: "Forma de pagamento do pedido (boleto, credit_card, debit_card, pix). Todo pedido tem 1 pagamento, inclusive os cancelados."
+type: categorical
+expression: "o.payment_method"
+requires_joins: []
+domain:
+  table: fact_orders
+  column: payment_method

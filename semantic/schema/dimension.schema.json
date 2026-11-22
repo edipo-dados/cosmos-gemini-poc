@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dimensão do catálogo semântico",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "business_name", "description", "type", "expression", "requires_joins"],
+  "properties": {
+    "name": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,63}$"},
+    "business_name": {"type": "string", "minLength": 1},
+    "description": {"type": "string", "minLength": 1},
+    "type": {"enum": ["date", "month", "year", "categorical"]},
+    "expression": {"type": "string", "minLength": 1},
+    "requires_joins": {"type": "array", "items": {"type": "string"}},
+    "domain": {"type": "object", "additionalProperties": false, "required": ["table", "column"],
+               "properties": {"table": {"type": "string"}, "column": {"type": "string"}}}
+  }
+}

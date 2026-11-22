@@ -1,0 +1,9 @@
+name: order_status
+business_name: "Status do pedido"
+description: "Status do pedido: pending, paid, cancelled ou refunded."
+type: categorical
+expression: "o.status"
+requires_joins: []
+domain:
+  table: fact_orders
+  column: status

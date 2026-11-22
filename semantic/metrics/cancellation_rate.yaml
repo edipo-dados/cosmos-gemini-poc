@@ -1,0 +1,33 @@
+name: cancellation_rate
+business_name: "Taxa de Cancelamento"
+description: "Pedidos cancelados divididos pelo total de pedidos, como razão de 0 a 1."
+formula: "COUNT(DISTINCT pedidos com status = 'cancelled') / COUNT(DISTINCT todos os pedidos)"
+source:
+  system: duckdb
+  tables: [fact_orders]
+grain: order
+expression: "CAST(COUNT(DISTINCT o.order_id) FILTER (WHERE o.status = 'cancelled') AS DOUBLE) / NULLIF(COUNT(DISTINCT o.order_id), 0)"
+base_filter: ""
+joins: []
+value_type: ratio
+denominator: "Todos os pedidos de qualquer status (pending, paid, cancelled, refunded) no mesmo recorte. NULL quando o denominador é 0."
+status_rule: "Numerador: status cancelled. Denominador: todos os status."
+time_basis: "Data do pedido (fact_orders.order_date)."
+allowed_dimensions: [date, month, year, region, segment, payment_method]
+applicable_filters:
+  dimensions: [date, month, year, region, segment, payment_method]
+  date_range: true
+owner: "Operações Comerciais"
+version: "1.0.0"
+tests:
+  - id: total_vs_reference_sql
+    type: reconciliation
+    description: "Taxa no DuckDB igual ao SQL de referência no PostgreSQL (oltp), tolerância absoluta 1e-9."
+    reference_sql: pipelines/quality/reference_sql/cancellation_rate.sql
+    tolerance: "1e-9"
+  - id: between_zero_and_one
+    type: invariant
+    invariant: between
+    min: "0"
+    max: "1"
+    description: "A taxa fica entre 0 e 1."

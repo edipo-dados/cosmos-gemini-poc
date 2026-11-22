@@ -1,0 +1,36 @@
+# Fontes e junções do DuckDB analítico. Único lugar onde nomes de tabelas e junções são declarados.
+# O Query Engine só compõe SQL com identificadores vindos deste arquivo e dos YAML de métricas e dimensões.
+engine: duckdb
+tables:
+  - dim_customer
+  - dim_product
+  - dim_region
+  - dim_date
+  - fact_orders
+  - fact_order_items
+  - fact_payments
+  - fact_refunds
+grains:
+  # grão do FROM de cada métrica
+  order: "fact_orders o"
+  item: "fact_orders o JOIN fact_order_items i ON i.order_id = o.order_id"
+# Junções opcionais, na ordem em que entram no SQL. `requires` lista junções que precisam vir antes.
+joins:
+  customer:
+    clause: "JOIN dim_customer c ON c.customer_id = o.customer_id"
+    requires: []
+  region:
+    clause: "JOIN dim_region dr ON dr.region_id = o.region_id"
+    requires: []
+  items:
+    clause: "JOIN fact_order_items i ON i.order_id = o.order_id"
+    requires: []
+  product:
+    clause: "JOIN dim_product p ON p.product_id = i.product_id"
+    requires: [items]
+  refunds_left:
+    clause: "LEFT JOIN fact_refunds rf ON rf.order_item_id = i.order_item_id AND rf.status = 'completed'"
+    requires: [items]
+  refunds_inner:
+    clause: "JOIN fact_refunds rf ON rf.order_item_id = i.order_item_id AND rf.status = 'completed'"
+    requires: [items]

@@ -1,0 +1,40 @@
+name: active_customers
+business_name: "Clientes Ativos"
+description: "Clientes distintos com pelo menos um pedido pago nos últimos 90 dias corridos, contando a data de referência."
+formula: "COUNT(DISTINCT customer_id) dos pedidos pagos com order_date entre as_of - 89 dias e as_of"
+source:
+  system: duckdb
+  tables: [fact_orders]
+grain: order
+expression: "COUNT(DISTINCT o.customer_id)"
+base_filter: "o.is_paid"
+joins: []
+value_type: count
+denominator: "Não se aplica (contagem distinta)."
+status_rule: "Pedidos paid e refunded. Pedido pending ou cancelled não torna o cliente ativo."
+time_basis: "Janela fixa de 90 dias: [as_of - 89, as_of]. as_of é o date_to da consulta; sem date_to, é a data final dos dados (DATA_END_DATE), nunca a data do sistema. date_from é rejeitado."
+window:
+  days: 90
+  anchor: date_to
+allowed_dimensions: [region, segment]
+applicable_filters:
+  dimensions: [region, segment]
+  date_range: false
+owner: "CRM e Relacionamento"
+version: "1.0.0"
+tests:
+  - id: total_vs_reference_sql
+    type: reconciliation
+    description: "Total no DuckDB igual ao SQL de referência no PostgreSQL (oltp), tolerância 0."
+    reference_sql: pipelines/quality/reference_sql/active_customers.sql
+    tolerance: "0"
+  - id: additive_by_region
+    type: invariant
+    invariant: additive_by_dimension
+    dimension: region
+    description: "Cada cliente pertence a uma região, então a soma por região é igual ao total."
+  - id: additive_by_segment
+    type: invariant
+    invariant: additive_by_dimension
+    dimension: segment
+    description: "Cada cliente pertence a um segmento, então a soma por segmento é igual ao total."

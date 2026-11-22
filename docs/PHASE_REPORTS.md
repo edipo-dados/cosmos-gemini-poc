@@ -156,3 +156,88 @@ A suíte sobe um PostgreSQL real próprio (cluster temporário, porta livre, sen
 - Tabelas `audit.*` foram criadas e têm permissões testadas, mas ainda não são gravadas pela aplicação (Fase 3).
 
 Nada foi commitado nesta etapa.
+
+## Fase 3: Semantic Governance com sync para o Cosmos
+Critério fechado por execução real: **4** (Cosmos inicializado e integrado conforme recursos comprovados). Critério **7** fechado no nível do motor (8 métricas contra SQL independente no PostgreSQL). Ambiente: o mesmo da Fase 2 (PostgreSQL 16.2 real via pgserver, DuckDB 2.0.1, Cosmos `464175f` instalado em modo editável, sem Docker, `GEMINI_API_KEY` ausente). Nada foi mockado: PostgreSQL, DuckDB e Cosmos (World real, servidor MCP real, `ToolAdapter` e `AuthorizationGateway` reais) rodaram de verdade.
+### O que foi entregue
+| Item | Onde |
+|---|---|
+| Catálogo versionado: 8 métricas (nome técnico e de negócio, descrição, fórmula, fonte, dimensões permitidas, filtros aplicáveis, responsável, versão, testes, denominador, regra de status, base de tempo) | `semantic/metrics/*.yaml` |
+| 9 dimensões (data, mês, ano, região, segmento, categoria, produto, forma de pagamento, status) | `semantic/dimensions/*.yaml` |
+| Fontes e junções do DuckDB (único lugar com nomes de tabela) | `semantic/sources.yaml` |
+| 11 regras de negócio (denominadores, status, janelas, base de tempo, atribuição, precisão, governança) | `semantic/rules/business_rules.yaml` |
+| Glossário pt-BR: 18 termos, sinônimos, "Receita" ambígua apontando para bruta e líquida | `semantic/glossary/glossary.yaml` |
+| 7 ferramentas permitidas (geram os nós `capability`) | `semantic/rules/agent_capabilities.yaml` |
+| Esquemas JSON e loader com `catalog_version` (hash do conteúdo) e validação cruzada | `semantic/schema/*.json`, `semantic/loader.py` |
+| Query Engine: validação, SQL parametrizado, execução somente leitura em DuckDB, evidências | `app/services/query_engine/{validation,sql_builder,executor,service,errors}.py` |
+| Sync YAML → World do Cosmos | `semantic/sync_to_cosmos.py` |
+| Testes de validação declarados nas métricas (21) | `semantic/metric_tests.py` |
+| Golden por SQL independente no PostgreSQL (61 casos) | `scripts/compute_golden.py`, `tests/golden/expected.json` |
+| Bootstrap do Cosmos no commit fixado e `cosmos init` | `scripts/bootstrap.sh` |
+| Relação YAML ↔ Cosmos e tabela proven/unproven | `cosmos/documentation/USO_DO_COSMOS.md` |
+| Atalhos | `make sync golden metric-tests` |
+### Decisões desta fase
+- **Fonte de verdade**: o YAML. O Query Engine só lê o YAML, nunca o grafo. O Cosmos recebe uma projeção (ver `USO_DO_COSMOS.md`).
+- **Sem SQL livre**: identificadores (tabelas, colunas, expressões, junções, aliases) vêm só do YAML. Valores de filtro, datas e limite entram como parâmetros `?`. Valores categóricos são conferidos contra o DuckDB (cache por `etl_run_id`). `assert_single_select` exige uma instrução `SELECT/WITH`. A garantia real de leitura é `duckdb.connect(read_only=True)` por requisição.
+- **Classificação de erros**: falha de esquema (tipo, campo extra, regex) vira `invalid_arguments`; falha de domínio usa os códigos `unknown_metric`, `dimension_not_allowed`, `invalid_dimension_combination`, `missing_required_dimension`, `invalid_filter`, `invalid_date_range`, `invalid_order`, `invalid_limit`, `query_timeout`.
+- **`monthly_revenue_growth`**: calendário completo (24 meses) crossjoin dos valores da região e do segmento pedidos; `LAG` antes do filtro de data; `date_from` e `date_to` só limitam os meses devolvidos.
+- **`active_customers`**: janela `[as_of - 89, as_of]`; `as_of` = `date_to` ou `DATA_END_DATE` (2026-10-31), nunca a data do sistema; `date_from` é rejeitado.
+- **Proveniência no Cosmos**: `created_by` (ator do `cosmos init`) mais `imported_from` com o arquivo YAML e o `catalog_version`; `authority.class = external`.
+- **Fora desta fase**: `ToolExecutor`, `SemanticReader`, auditoria em `audit.query_audit` e o adaptador de 7 ferramentas (itens 3.6 do plano) não foram implementados. O escopo pedido foi catálogo, Query Engine e sync. O gateway foi provado no teste de sync com um provider mínimo escrito no próprio teste.
+### Execução (comandos e saídas reais)
+World do projeto: `bash scripts/bootstrap.sh` (reexecução é no-op: "Checked 18 packages"), `cosmos init .` criou `cosmos.environment.json` e `.cosmos/` (ignorados pelo git). Hooks `.githooks/` removidos (apontam para caminho Windows).
+```
+$ make sync
+{ "catalog_version": "54c809efd410", "written": true, "changed_records": 103, "removed_stale": 0, "records_generated": 103,
+  "by_kind": {"actor": 2, "poc.dimension": 9, "poc.metric": 8, "poc.glossary_term": 18, "rule": 11, "edge": 48, "capability": 7},
+  "preserved_foreign_records": 6, "validate_graph_errors": [] }
+$ .venv/bin/cosmos validate .
+{ "edge_count": 50, "node_count": 59, "environment_id": "cosmos:environment:developer:poc-cosmos", "valid": true }
+$ make sync   # 2a execução
+"written": false, "changed_records": 0        # md5 de .cosmos/graph.json idêntico antes e depois (9aa66f04...)
+```
+Leitura de volta pelo servidor MCP do Cosmos (subprocesso, `COSMOS_GRAPH` absoluto e `cwd` fixos) sobre o World do projeto:
+```
+cosmos_query {"where":{"id": metric_id("net_revenue")}} -> count 1, display_name net_revenue, aliases ['Receita Líquida'], version 1.0.0, owner Finanças,
+  provenance imported_from {system: poc-semantic-catalog, uri: semantic/metrics/net_revenue.yaml, revision: 54c809efd410}
+cosmos_explain net_revenue -> regras governed_by: Status do pedido, Consultas governadas, Valores monetários, Atribuição por categoria e produto,
+  Base de tempo, Pedido pago, Reembolso efetivado
+cosmos_tool -> 7 capabilities
+```
+Testes de métrica declarados no catálogo (SQL de referência no PostgreSQL `oltp` via `poc_reader` contra o Query Engine em DuckDB):
+```
+$ .venv/bin/python -m semantic.metric_tests
+OK   gross_revenue            total_vs_reference_sql   referência=30515235.50 motor=30515235.50
+OK   net_revenue              total_vs_reference_sql   referência=26269632.31 motor=26269632.31
+OK   order_count              total_vs_reference_sql   referência=20000 motor=20000
+OK   average_order_value      total_vs_reference_sql   referência=1585.1817710596185 motor=1585.1817710596185
+OK   active_customers         total_vs_reference_sql   referência=1424 motor=1424
+OK   cancellation_rate        total_vs_reference_sql   referência=0.1169 motor=0.1169
+OK   refund_amount            total_vs_reference_sql   referência=4245603.19 motor=4245603.19
+OK   monthly_revenue_growth   series_vs_reference_sql  24 chave(s) comparada(s), 0 divergência(s)
+(+ 13 invariantes: aditividade por região/segmento/status, faixa 0 a 1, líquida <= bruta, primeiro mês NULL)
+21/21 testes de métrica passaram (catalog_version=54c809efd410)
+$ .venv/bin/python scripts/compute_golden.py
+61 casos gravados em tests/golden/expected.json
+```
+### Testes
+```
+$ .venv/bin/python -m pytest -m "not live_gemini" -q
+174 passed in 37.08s          # 37 da Fase 2 + 137 desta fase
+```
+Novos arquivos e o que cobrem:
+- `unit/test_semantic_catalog.py`: esquema; matriz métrica × dimensão igual à tabela do ARCHITECTURE; owner, versão e testes em todas as métricas; "receita" mapeia para as duas métricas; sinônimos exigidos; `catalog_version` estável e sensível ao conteúdo; YAML inválido rejeitado.
+- `unit/test_validation.py`, `unit/test_sql_builder.py`: códigos de erro, injeção em filtros, dimensões e `order_by` (nada vai ao SQL), parâmetros `?`, janela de 90 dias, `LAG` antes do filtro de data, rejeição de `DELETE/DROP/ATTACH/;`.
+- `integration/test_query_engine.py`: DuckDB real; evidências (SQL, parâmetros, filtros, versões, `etl_run_id` igual a `etl_meta`); injeção; `active_customers` com `date_to` e `date_from` rejeitado; crescimento com janela, `order_by`, `limit`; conexão `read_only` (CREATE e DELETE falham); **timeout real**: consulta `range(1e10)` interrompida por `interrupt()` com `query_timeout` em menos de 5 s e conexão ainda utilizável; novo ETL é visto sem reiniciar.
+- `integration/test_metrics_reconciliation.py`: 61 casos do golden (por métrica e por região, mês, ano, categoria, produto, forma de pagamento, status, segmento, com filtros e janelas) com tolerância 0 em dinheiro e contagens e 1e-9 em razões; os 21 testes declarados; prova negativa (fórmula de `net_revenue` sem reembolsos faz o teste declarado falhar).
+- `integration/test_cosmos_sync.py`: World descartável real; `validate_graph == []` e `cosmos validate` `valid: true`; MCP em subprocesso com `count > 0` antes de comparar; 8 métricas, 9 dimensões, glossário, regras, versões e proveniência iguais ao YAML; `cosmos_explain` lista as regras por `core.governed_by`; idempotência (arquivo idêntico, registros do `cosmos init` preservados); alteração de YAML muda o grafo (`updated_at`); regra e sinônimo removidos saem do grafo sem arestas órfãs; `ToolAdapter` + `AuthorizationGateway` reais permitem a ferramenta declarada, negam a não declarada e passam a negar uma ferramenta removida do YAML depois do sync; sem World, código 2 e nada é criado.
+### Itens verificados e não verificados
+Verificado por execução: sync com `validate_graph` e `cosmos validate`; leitura pelo MCP real; idempotência; propagação de mudanças e remoções; gateway permitindo e negando conforme os nós sincronizados; reconciliação das 8 métricas por 61 casos e 21 testes declarados; timeout; somente leitura; injeção rejeitada.
+Não verificado ou não feito:
+- **`SemanticReader` e `explain_metric` sobre o grafo do sync real**: não implementados nesta fase (item 3.6). O que está provado é a base: `cosmos_explain` e `cosmos_query` do Cosmos devolvem os dados do sync real. O formato de erro de `tool_explain` com grafo inválido continua provado só pelo spike da Fase 1.
+- Fluxo oficial de admissão de conhecimento (Candidate Intake): contornado. O sync grava `active` direto (declarado em `USO_DO_COSMOS.md`).
+- O gateway carregar sozinho os nós `capability`: UNPROVEN; o provider é código do projeto (no teste).
+- Busca por sinônimo no MCP: UNPROVEN (o MCP não filtra `aliases`); o glossário e os `aliases` estão no grafo para o adaptador da Fase 4.
+- `scripts/cosmos_world_init.sh` (container) não foi escrito; Docker indisponível.
+- Gemini: nada nesta fase depende dele.
+Nada foi commitado nesta etapa, conforme instrução.

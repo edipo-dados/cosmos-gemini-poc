@@ -1,0 +1,32 @@
+name: average_order_value
+business_name: "Ticket Médio"
+description: "Receita líquida dividida pela quantidade de pedidos pagos."
+formula: "net_revenue / COUNT(DISTINCT pedidos pagos)"
+source:
+  system: duckdb
+  tables: [fact_orders, fact_order_items, fact_refunds]
+grain: item
+expression: "CAST(COALESCE(SUM(i.line_total), 0) - COALESCE(SUM(rf.refund_amount), 0) AS DOUBLE) / NULLIF(COUNT(DISTINCT o.order_id), 0)"
+base_filter: "o.is_paid"
+joins: [refunds_left]
+value_type: ratio
+denominator: "Pedidos pagos distintos (status paid ou refunded) no mesmo recorte. NULL quando o denominador é 0."
+status_rule: "Numerador e denominador usam só pedidos paid e refunded. Pedidos pending e cancelled ficam fora dos dois."
+time_basis: "Data do pedido (fact_orders.order_date)."
+allowed_dimensions: [date, month, year, region, segment, category, product, payment_method, order_status]
+applicable_filters:
+  dimensions: [date, month, year, region, segment, category, product, payment_method, order_status]
+  date_range: true
+owner: "Finanças"
+version: "1.0.0"
+tests:
+  - id: total_vs_reference_sql
+    type: reconciliation
+    description: "Total no DuckDB igual ao SQL de referência no PostgreSQL (oltp), tolerância absoluta 1e-9."
+    reference_sql: pipelines/quality/reference_sql/average_order_value.sql
+    tolerance: "1e-9"
+  - id: not_negative
+    type: invariant
+    invariant: min_value
+    min: "0"
+    description: "Ticket médio nunca é negativo."

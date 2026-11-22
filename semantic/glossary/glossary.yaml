@@ -1,0 +1,77 @@
+# Glossário de negócio em português. `maps_to` aponta para métricas ou dimensões do catálogo.
+# Termos ambíguos mapeiam para mais de um destino de propósito (ex.: "receita").
+version: "1.0.0"
+language: pt-BR
+terms:
+  - term: "Receita"
+    synonyms: ["Faturamento", "Vendas", "Receita de vendas"]
+    definition: "Termo ambíguo. Pode significar Receita Bruta (antes de reembolsos) ou Receita Líquida (depois de reembolsos efetivados). Pergunte ao usuário ou explique a escolha."
+    maps_to: [{type: metric, name: gross_revenue}, {type: metric, name: net_revenue}]
+  - term: "Receita bruta"
+    synonyms: ["Faturamento bruto", "Receita total bruta", "Gross revenue"]
+    definition: "Valor bruto dos pedidos pagos, antes dos reembolsos."
+    maps_to: [{type: metric, name: gross_revenue}]
+  - term: "Receita líquida"
+    synonyms: ["Faturamento líquido", "Receita efetiva", "Net revenue"]
+    definition: "Valor dos pedidos pagos menos os reembolsos efetivados."
+    maps_to: [{type: metric, name: net_revenue}]
+  - term: "Pedidos"
+    synonyms: ["Quantidade de pedidos", "Número de pedidos", "Volume de pedidos", "Order count"]
+    definition: "Quantidade de pedidos de qualquer status."
+    maps_to: [{type: metric, name: order_count}]
+  - term: "Ticket médio"
+    synonyms: ["Valor médio do pedido", "Average order value", "AOV"]
+    definition: "Receita líquida dividida pela quantidade de pedidos pagos."
+    maps_to: [{type: metric, name: average_order_value}]
+  - term: "Cliente ativo"
+    synonyms: ["Clientes ativos", "Base ativa", "Active customer"]
+    definition: "Cliente com pelo menos um pedido pago nos últimos 90 dias."
+    maps_to: [{type: metric, name: active_customers}]
+  - term: "Cancelamento"
+    synonyms: ["Taxa de cancelamento", "Churn de pedidos", "Pedidos cancelados", "Cancellation"]
+    definition: "Pedidos cancelados divididos pelo total de pedidos."
+    maps_to: [{type: metric, name: cancellation_rate}]
+  - term: "Reembolso"
+    synonyms: ["Reembolsos", "Estorno", "Estornos", "Devolução", "Devoluções", "Refund"]
+    definition: "Valor total dos reembolsos efetivados."
+    maps_to: [{type: metric, name: refund_amount}]
+  - term: "Crescimento mensal"
+    synonyms: ["Crescimento da receita", "Variação mensal da receita", "Crescimento mês a mês", "MoM"]
+    definition: "Crescimento percentual da receita líquida em relação ao mês anterior."
+    maps_to: [{type: metric, name: monthly_revenue_growth}]
+  - term: "Região"
+    synonyms: ["Regiões", "Região geográfica", "Praça"]
+    definition: "Região do cliente: Norte, Nordeste, Centro-Oeste, Sudeste ou Sul."
+    maps_to: [{type: dimension, name: region}]
+  - term: "Segmento"
+    synonyms: ["Segmento de cliente", "Perfil de cliente", "Tipo de cliente"]
+    definition: "Segmento do cliente: Varejo, Premium, Corporativo ou Pequena Empresa."
+    maps_to: [{type: dimension, name: segment}]
+  - term: "Categoria"
+    synonyms: ["Categoria de produto", "Linha de produto", "Departamento"]
+    definition: "Categoria do produto vendido."
+    maps_to: [{type: dimension, name: category}]
+  - term: "Produto"
+    synonyms: ["Item", "SKU", "Mercadoria"]
+    definition: "Produto vendido."
+    maps_to: [{type: dimension, name: product}]
+  - term: "Forma de pagamento"
+    synonyms: ["Meio de pagamento", "Método de pagamento", "Pagamento", "Payment method"]
+    definition: "Forma de pagamento do pedido: boleto, cartão de crédito, cartão de débito ou Pix."
+    maps_to: [{type: dimension, name: payment_method}]
+  - term: "Status do pedido"
+    synonyms: ["Situação do pedido", "Estado do pedido", "Status"]
+    definition: "Status do pedido: pending (pendente), paid (pago), cancelled (cancelado) ou refunded (reembolsado)."
+    maps_to: [{type: dimension, name: order_status}]
+  - term: "Mês"
+    synonyms: ["Mensal", "Por mês", "Mês do pedido"]
+    definition: "Mês do pedido, no formato AAAA-MM."
+    maps_to: [{type: dimension, name: month}]
+  - term: "Ano"
+    synonyms: ["Anual", "Por ano", "Ano do pedido"]
+    definition: "Ano do pedido."
+    maps_to: [{type: dimension, name: year}]
+  - term: "Data"
+    synonyms: ["Dia", "Diário", "Por dia", "Data do pedido"]
+    definition: "Dia do pedido."
+    maps_to: [{type: dimension, name: date}]

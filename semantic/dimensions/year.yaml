@@ -1,0 +1,6 @@
+name: year
+business_name: "Ano"
+description: "Ano do pedido."
+type: year
+expression: "year(o.order_date)"
+requires_joins: []

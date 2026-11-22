@@ -1,0 +1,6 @@
+name: month
+business_name: "Mês"
+description: "Mês do pedido no formato AAAA-MM."
+type: month
+expression: "strftime(o.order_date, '%Y-%m')"
+requires_joins: []

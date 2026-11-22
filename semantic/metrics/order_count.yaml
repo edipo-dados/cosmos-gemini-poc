@@ -1,0 +1,37 @@
+name: order_count
+business_name: "Quantidade de Pedidos"
+description: "Quantidade de pedidos de qualquer status (pending, paid, cancelled, refunded)."
+formula: "COUNT(DISTINCT orders.order_id)"
+source:
+  system: duckdb
+  tables: [fact_orders]
+grain: order
+expression: "COUNT(DISTINCT o.order_id)"
+base_filter: ""
+joins: []
+value_type: count
+denominator: "Não se aplica (contagem). É o mesmo universo do denominador de cancellation_rate."
+status_rule: "Todos os status. Para filtrar por status, use a dimensão order_status."
+time_basis: "Data do pedido (fact_orders.order_date)."
+allowed_dimensions: [date, month, year, region, segment, category, product, payment_method, order_status]
+applicable_filters:
+  dimensions: [date, month, year, region, segment, category, product, payment_method, order_status]
+  date_range: true
+owner: "Operações Comerciais"
+version: "1.0.0"
+tests:
+  - id: total_vs_reference_sql
+    type: reconciliation
+    description: "Total no DuckDB igual ao SQL de referência no PostgreSQL (oltp), tolerância 0."
+    reference_sql: pipelines/quality/reference_sql/order_count.sql
+    tolerance: "0"
+  - id: additive_by_region
+    type: invariant
+    invariant: additive_by_dimension
+    dimension: region
+    description: "A soma por região é igual ao total (cada pedido pertence a uma região)."
+  - id: additive_by_order_status
+    type: invariant
+    invariant: additive_by_dimension
+    dimension: order_status
+    description: "A soma por status é igual ao total."

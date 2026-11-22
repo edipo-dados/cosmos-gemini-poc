@@ -1,0 +1,37 @@
+name: net_revenue
+business_name: "Receita Líquida"
+description: "Receita bruta dos pedidos pagos menos os reembolsos efetivados (status completed) dos mesmos pedidos."
+formula: "gross_revenue - SUM(refunds.refund_amount WHERE refunds.status = 'completed')"
+source:
+  system: duckdb
+  tables: [fact_orders, fact_order_items, fact_refunds]
+grain: item
+expression: "COALESCE(SUM(i.line_total), 0) - COALESCE(SUM(rf.refund_amount), 0)"
+base_filter: "o.is_paid"
+joins: [refunds_left]
+value_type: money
+denominator: "Não se aplica (soma)."
+status_rule: "Pedidos paid e refunded. Só reembolsos completed entram; pending e rejected são ignorados. O reembolso é atribuído à data do pedido de origem."
+time_basis: "Data do pedido (fact_orders.order_date)."
+allowed_dimensions: [date, month, year, region, segment, category, product, payment_method, order_status]
+applicable_filters:
+  dimensions: [date, month, year, region, segment, category, product, payment_method, order_status]
+  date_range: true
+owner: "Finanças"
+version: "1.0.0"
+tests:
+  - id: total_vs_reference_sql
+    type: reconciliation
+    description: "Total no DuckDB igual ao SQL de referência no PostgreSQL (oltp), tolerância 0."
+    reference_sql: pipelines/quality/reference_sql/net_revenue.sql
+    tolerance: "0"
+  - id: additive_by_region
+    type: invariant
+    invariant: additive_by_dimension
+    dimension: region
+    description: "A soma por região é igual ao total."
+  - id: not_greater_than_gross
+    type: invariant
+    invariant: not_greater_than
+    other_metric: gross_revenue
+    description: "Receita líquida não excede a receita bruta."

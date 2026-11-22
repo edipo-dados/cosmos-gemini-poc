@@ -1,0 +1,20 @@
+# Ferramentas do agente permitidas. Cada item vira um nó `capability` (tool.invoke) no Cosmos.
+# Remover um item aqui e rodar o sync remove o nó e o gateway passa a negar a ferramenta.
+system: poc-tools
+grantee: poc.agent
+requester: poc.user
+tools:
+  - name: search_concepts
+    description: "Busca métricas, dimensões e termos do glossário por texto, inclusive sinônimos em português."
+  - name: explain_metric
+    description: "Explica uma métrica: fórmula, denominador, filtros, regras de status, dimensões permitidas, responsável e versão."
+  - name: list_metrics
+    description: "Lista as métricas cadastradas e o intervalo de datas dos dados."
+  - name: list_dimensions
+    description: "Lista as dimensões, opcionalmente só as permitidas para uma métrica."
+  - name: query_metric
+    description: "Consulta uma métrica cadastrada pelo Query Engine (somente leitura, DuckDB)."
+  - name: show_sql
+    description: "Mostra o SQL parametrizado executado em uma consulta anterior."
+  - name: get_evidence
+    description: "Devolve as evidências de uma consulta: filtros, versão do catálogo, execução do ETL e referências do Cosmos."

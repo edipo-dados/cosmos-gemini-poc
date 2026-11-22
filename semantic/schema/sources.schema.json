@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fontes e junções do DuckDB",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["engine", "tables", "grains", "joins"],
+  "properties": {
+    "engine": {"const": "duckdb"},
+    "tables": {"type": "array", "items": {"type": "string"}},
+    "grains": {"type": "object", "required": ["order", "item"], "additionalProperties": {"type": "string"}},
+    "joins": {"type": "object", "additionalProperties": {"type": "object", "additionalProperties": false,
+              "required": ["clause", "requires"],
+              "properties": {"clause": {"type": "string"}, "requires": {"type": "array", "items": {"type": "string"}}}}}
+  }
+}

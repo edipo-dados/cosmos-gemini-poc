@@ -1,0 +1,9 @@
+name: category
+business_name: "Categoria"
+description: "Categoria do produto do item vendido."
+type: categorical
+expression: "p.category_name"
+requires_joins: [product]
+domain:
+  table: dim_product
+  column: category_name

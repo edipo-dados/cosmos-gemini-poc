@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Glossário de negócio",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "language", "terms"],
+  "properties": {
+    "version": {"type": "string"},
+    "language": {"const": "pt-BR"},
+    "terms": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false,
+      "required": ["term", "synonyms", "definition", "maps_to"],
+      "properties": {"term": {"type": "string", "minLength": 1},
+                     "synonyms": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+                     "definition": {"type": "string", "minLength": 1},
+                     "maps_to": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false,
+                                 "required": ["type", "name"],
+                                 "properties": {"type": {"enum": ["metric", "dimension"]}, "name": {"type": "string"}}}}}}}
+  }
+}

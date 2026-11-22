@@ -1,0 +1,9 @@
+name: segment
+business_name: "Segmento de cliente"
+description: "Segmento do cliente (Varejo, Premium, Corporativo, Pequena Empresa)."
+type: categorical
+expression: "c.segment"
+requires_joins: [customer]
+domain:
+  table: dim_customer
+  column: segment
