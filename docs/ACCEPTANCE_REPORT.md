@@ -14,14 +14,16 @@ Antes da execução, `pgdata/`, `analytics.duckdb`, `dq_lab.duckdb`, `logs/`, `.
 | 2 | DuckDB funcionando e populado | verificado por execução |
 | 3 | Pipeline de carga executando | verificado por execução |
 | 4 | Cosmos inicializado e integrado | verificado por execução |
-| 5 | Gemini conectado com API Key | **não verificado** |
-| 6 | Agente descobre conceitos e consulta métricas | verificado por execução só nas ferramentas; **escolha de ferramenta pelo Gemini não verificada** |
-| 7 | Respostas numéricas iguais ao SQL de referência | verificado por execução no Query Engine e na API; **não verificado de ponta a ponta com o Gemini** |
+| 5 | Gemini conectado com API Key | verificado por execução (seção "Verificação ao vivo do Gemini") |
+| 6 | Agente descobre conceitos e consulta métricas | verificado por execução com o Gemini real; **interpretação nem sempre estável** (13/14 na última rodada) |
+| 7 | Respostas numéricas iguais ao SQL de referência | verificado por execução no Query Engine, na API e de ponta a ponta com o Gemini nas perguntas de demonstração |
 | 8 | SQL inspecionável | verificado por execução |
 | 9 | Evidências disponíveis | verificado por execução |
 | 10 | Interface web funcional | verificado por execução (AppTest e serviço real); **não vista em navegador** |
-| 11 | Testes automatizados passando | verificado por execução (os 14 testes ao vivo ficam em skip) |
+| 11 | Testes automatizados passando | verificado por execução (suíte padrão 271 passed; ao vivo 13/14 na última rodada) |
 | 12 | Aplicação inicia seguindo o README | verificado por execução, parcial: sem Docker e sem clone limpo |
+
+Atualização de 2026-11-22: os critérios 5, 6 e 7 foram verificados com o Gemini real (`gemini-2.5-flash`, chave do `.env`, valor não exibido), após as correções do commit `a97afee`. Comandos e saídas em `docs/PHASE_REPORTS.md`, seção "Verificação ao vivo do Gemini". O restante deste relatório descreve a execução da Fase 6, feita sem chave.
 
 ## Evidências por critério
 
@@ -75,26 +77,27 @@ Em `tests/integration/test_cosmos_sync.py` e `test_api.py` o conteúdo gravado n
 
 Teste de métricas contra SQL de referência: `make metric-tests` deu `21/21 testes de métrica passaram (catalog_version=54c809efd410)`.
 
-### 5. Gemini conectado com API Key: não verificado
-Nenhuma chamada ao Gemini real foi feita nesta execução, porque a chave foi deliberadamente esvaziada (ver cabeçalho). O código existe (`agent/gemini/`, 7 `FunctionDeclaration`, tratamento de 401/403/404/429/5xx) e é testado até a fronteira HTTP do SDK `google-genai`, com transporte roteirizado. `GET /health` mostrou `"gemini":"not_configured"` e `POST /ask` devolveu HTTP 503 `gemini_not_configured`. Os 14 testes `live_gemini` ficaram em skip:
+### 5. Gemini conectado com API Key: verificado por execução
+Com a chave do `.env`, `GET /health` respondeu `"gemini":"configured","gemini_model":"gemini-2.5-flash"`, e `POST /chat` respondeu HTTP 200 com `model` `gemini-2.5-flash` em 4 perguntas. A primeira rodada ao vivo revelou um defeito: o SDK chamava a API `v1`, que rejeita function calling (HTTP 400, convertido em 502). O cliente agora usa `v1beta` (commit `a97afee`). Nenhum 402 ou 429 ocorreu.
 ```
-$ GEMINI_API_KEY= pytest -m live_gemini -q -rs
-SKIPPED [14] tests/live/test_live_gemini.py:32: GEMINI_API_KEY ausente
-14 skipped, 266 deselected
+$ set -a; . ./.env; set +a; .venv/bin/python -m pytest -m live_gemini -q
+13 passed, 1 failed, 271 deselected      (última rodada; a anterior, com o mesmo código: 12 passed, 2 failed)
 ```
-Para verificar: `GEMINI_API_KEY=<chave válida> .venv/bin/python -m pytest -m live_gemini -q`.
 
-### 6. Agente descobre conceitos e consulta métricas: parcial
-Verificado por execução: as ferramentas que o agente usa (`search_concepts`, `explain_metric`, `list_metrics`, `list_dimensions`, `query_metric`) funcionam pela API e por `tests/integration/test_orchestration.py`, com o SDK real e roteiro escrito à mão. Exemplo real:
+### 6. Agente descobre conceitos e consulta métricas: verificado por execução, com ressalva
+Com o Gemini real via `POST /chat`, o modelo chamou `search_concepts` para "faturamento" e "receita", `list_metrics` para o intervalo de datas, `list_dimensions`, `explain_metric` e `query_metric`. Em "Qual região teve a maior receita?" ele recebeu `invalid_order` duas vezes, corrigiu o argumento (`order_by.field="metric"`) e respondeu em português. Cada chamada gerou uma decisão no Cosmos e uma linha em `audit.query_audit`.
+
+Antes das correções, o modelo chegou a responder com números sem chamar ferramenta. Agora a primeira rodada exige uma chamada de ferramenta (modo `ANY`). Ressalva: a interpretação varia entre rodadas. Com o mesmo código, a q15 ("Como cresceu a receita líquida...") consultou `net_revenue` mensal em vez de `monthly_revenue_growth`, a q16 agrupou também por forma de pagamento, e uma resposta veio vazia (502). Nenhuma rodada passou 14/14.
+
+As ferramentas também foram verificadas diretamente, sem o Gemini:
 ```
 $ curl -X POST :8000/tools/query_metric -d '{"metric":"lucro"}'            -> HTTP 422 unknown_metric (lista as 8 métricas)
 $ curl -X POST :8000/tools/query_metric -d '{"metric":"active_customers","dimensions":["category"]}'
 HTTP 422 dimension_not_allowed, allowed_dimensions ["region","segment"]
 $ curl -X POST :8000/tools/execute_sql -d '{"sql":"DROP TABLE fact_orders"}' -> HTTP 404 unknown_tool
 ```
-Não verificado: que o Gemini real escolha essas ferramentas, preencha os argumentos e responda em português.
 
-### 7. Números iguais ao SQL de referência: verificado por execução (sem Gemini)
+### 7. Números iguais ao SQL de referência: verificado por execução
 `tests/integration/test_questions_golden.py` chama 19 perguntas pela API e compara com `tests/golden/expected.json` (SQL independente no PostgreSQL), com tolerância 0 em dinheiro e contagens. Passou na suíte completa. Exemplo na API real:
 ```
 $ curl -X POST :8000/tools/query_metric -d '{"metric":"net_revenue","dimensions":["region"],"limit":1,"order_by":{"field":"metric","direction":"desc"}}'
@@ -102,7 +105,15 @@ rows [{"region":"Sudeste","value":"13063627.23"}]   (golden net_revenue.by_regio
 $ curl -X POST :8000/tools/query_metric -d '{"metric":"net_revenue","date_from":"2026-10-02","date_to":"2026-10-31"}'
 HTTP 200 rows [{"value":"876344.70"}]                (golden last_30_days: 876344.70)
 ```
-`make golden` recalculou o arquivo: os valores são iguais aos versionados (só a ordem das linhas muda), e o arquivo versionado foi restaurado. Estes testes validam o Query Engine, não a interpretação do Gemini.
+`make golden` recalculou o arquivo: os valores são iguais aos versionados (só a ordem das linhas muda), e o arquivo versionado foi restaurado. Estes testes validam o Query Engine.
+
+De ponta a ponta com o Gemini real (`POST /chat`), comparando com o SQL de referência `scripts/compute_golden.py::_query`, executado no PostgreSQL na mesma sessão:
+```
+"Qual foi o faturamento dos últimos 30 dias?"  -> net_revenue 2026-10-02..2026-10-31 = 876344.70   SQL de referência: 876344.70
+"Qual região teve a maior receita?"            -> Sudeste 13063627.23                             SQL de referência: Sudeste 13063627.23
+"Qual foi a receita bruta por região em outubro de 2026?" -> 5 regiões iguais a gross_revenue.oct2026_by_region
+```
+"Explique como o faturamento líquido é calculado." chamou `explain_metric` e citou fórmula, filtro `o.is_paid` e regras de status. Os 3 turnos ficaram em `audit.chat_turn` com status `ok`, episódio do Cosmos e 9 linhas em `audit.query_audit`. `show_sql` e `/evidence/<query_id>` responderam HTTP 200 para as consultas do chat. Nos testes `live_gemini`, 13 de 14 respostas trouxeram o valor do golden.
 
 ### 8. SQL inspecionável: verificado por execução
 ```
@@ -120,21 +131,21 @@ A trilha fica em `audit.query_audit` e é lida por `GET /audit/queries`.
 ### 10. Interface web funcional: verificado por execução, sem navegador
 - `pytest tests/frontend`: 14 passed (AppTest sobre uvicorn real: 5 páginas, KPIs iguais ao golden, aviso sem chave, consulta direta).
 - Serviço real: `streamlit run app/frontend/Home.py --server.port 8501 --server.headless true` respondeu `/_stcore/health` HTTP 200 `ok` e `GET /` HTTP 200, com a API real na porta 8000 (`/overview` HTTP 200).
-- Não verificado: aparência no navegador e chat com o Gemini real.
+- Não verificado: aparência no navegador e chat com o Gemini real pela interface (o chat real foi verificado pela API).
 
 ### 11. Testes automatizados passando: verificado por execução
 ```
 $ make test      # pytest -m "not live_gemini" -q
 266 passed, 14 deselected in 45.66s
 ```
-Cobre unidade, integração, segurança de permissões, frontend e as 19 perguntas golden (ambígua, métrica inexistente, dimensão não autorizada e tentativa de injeção de SQL incluídas). Os 14 testes `live_gemini` não rodaram (critério 5).
+Cobre unidade, integração, segurança de permissões, frontend e as 19 perguntas golden (ambígua, métrica inexistente, dimensão não autorizada e tentativa de injeção de SQL incluídas). Os 14 testes `live_gemini` não rodaram nesta fase. Na verificação ao vivo posterior, `GEMINI_API_KEY= make test` deu 271 passed, 14 deselected (266 mais 5 testes do mapeamento 402/429), e `pytest -m live_gemini` deu 13 passed, 1 failed (critérios 5 e 6).
 
 ### 12. Aplicação inicia seguindo o README: parcial
 Executados nesta sessão os comandos do README seção 5: `bash scripts/bootstrap.sh` (idempotente, "Bootstrap concluído"), `make pg-start migrate load etl quality sync metric-tests`, uvicorn na porta 8000, Streamlit na 8501, `make test`. Limites: a execução foi no diretório de trabalho existente (com `.venv`, `.vendor` e `.env` já presentes), não em um clone limpo; o `bootstrap.sh` não foi exercitado do zero. O caminho Docker do README (seção 6) **não foi executado**: não há Docker no ambiente, e só a análise estática do Compose e do Dockerfile passou.
 
 ## Não verificado
 
-- Gemini real (critérios 5, 6 e parte do 7): sem chave utilizada.
+- Estabilidade do Gemini real: nenhuma rodada de `live_gemini` passou 14/14 (critério 6).
 - Docker, `docker compose config/build/up` e o encaixe do World no volume.
 - Interface em navegador.
 - Instalação em clone limpo e do zero.
@@ -152,7 +163,7 @@ Revisão da Fase 6: APPROVED. Achados de baixa gravidade, não bloqueantes:
 - Data da execução (2026-11-22, conferida: 17:20 UTC) e o backup `/tmp/poc-backup-1795368000` (existe) conferidos.
 
 Riscos conhecidos:
-- Gemini real nunca exercitado com chave válida (critérios 5, 6 e parte do 7). Uma chamada acidental na Fase 4 recebeu HTTP 402.
+- Respostas do Gemini real variam entre execuções: 1 ou 2 das 14 perguntas golden falham por interpretação. A chamada acidental da Fase 4 recebeu HTTP 402; na verificação ao vivo não houve 402.
 - Docker/Compose não executado; World do Cosmos em volume de contêiner não verificado (`cosmos init` sem `.git` falha).
 - Cosmos em "Developer Preview", fixado por commit; `transition_episode` é API interna, coberta por teste de contrato.
 - O sync grava conhecimento já `active` (sem fluxo `candidate` → `validated` → `active`).

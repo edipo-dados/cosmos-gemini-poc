@@ -406,3 +406,74 @@ $ grep -c AIza logs/*.log                          # 0 ocorrências
 Servidores encerrados ao final. O PostgreSQL local ficou ligado.
 ### Não verificado
 Gemini real, Docker/Compose, interface em navegador, instalação em clone limpo. Detalhes e motivos em `docs/ACCEPTANCE_REPORT.md`.
+## Verificação ao vivo do Gemini
+Execução em 2026-11-22 com o Gemini real. `GEMINI_API_KEY` estava definida (valor não exibido, carregado do `.env` com `set -a; . ./.env; set +a`), com `GEMINI_MODEL=gemini-2.5-flash`. O PostgreSQL local já estava populado (`etl_run_id` 1, `catalog_version` 54c809efd410). O serviço não devolveu nenhum 402 ou 429 nesta sessão.
+### Defeitos encontrados e corrigidos (commit `a97afee`)
+1. **Versão da API.** A primeira rodada de `pytest -m live_gemini` teve 14 falhas, todas HTTP 502 `llm_unavailable`. O log registrou `code=400 status=INVALID_ARGUMENT message=Function calling is not enabled for api version v1. Use api version v1beta instead.` O SDK `google-genai` usa `v1` por padrão. `GeminiClient` agora fixa `api_version="v1beta"` (`agent/gemini/client.py`), e o teste offline `test_sdk_serializes_declarations_on_the_wire` confere a URL `/v1beta/`.
+2. **Números inventados.** Na segunda rodada (8 passed, 6 failed), três respostas traziam números sem nenhuma chamada de ferramenta: q15, q18 ("R$ 250,75", métrica inexistente `average_ticket`) e q19. O orquestrador agora usa `FunctionCallingConfigMode.ANY` na primeira rodada, o que obriga o modelo a chamar uma ferramenta, e `AUTO` nas seguintes (`agent/orchestration/loop.py`, `GeminiClient.generate(force_tool=...)`).
+3. **Instrução de sistema** (`agent/gemini/prompts.py`). Regra 4: se a pergunta pede um valor e diz "faturamento" ou "receita" sem qualificar, o modelo consulta `net_revenue`, explica a escolha e cita `gross_revenue` como alternativa. Antes ele só pedia esclarecimento (q01, q02, q05), embora as perguntas golden (`tests/golden/questions.json`) esperem `net_revenue`. Regra 3: "últimos N dias" vai de data_as_of menos N-1 dias até data_as_of, e sem período na pergunta não se envia `date_from`/`date_to`. Antes houve uma resposta com 2026-10-01..31 e uma taxa de cancelamento de um único dia.
+### `pytest -m live_gemini` (14 testes, perguntas golden com valor esperado)
+```
+$ set -a; . ./.env; set +a; .venv/bin/python -m pytest -m live_gemini -q -rs
+rodada 1 (antes das correções):        14 failed  (HTTP 400 em v1 sem function calling -> 502)
+rodada 2 (v1beta):                     8 passed, 6 failed (q01 q02 q05 pediram esclarecimento; q15 q18 q19 números inventados)
+rodada 3 (ANY na 1ª rodada + regra 4): 10 passed, 4 failed (q01 usou 2026-10-01..31 = 963103.40; q06 só 2026-10-31; q15 usou net_revenue em vez de monthly_revenue_growth; q17 respondeu "sem dados")
+rodada 4 (regra 3):                    12 passed, 2 failed (uma resposta vazia do Gemini -> 502; q16 agrupou também por payment_method)
+rodada 5 (mesmo código da rodada 4):   13 passed, 1 failed (q15: consultou net_revenue por mês, não monthly_revenue_growth)
+```
+Com o mesmo código, as falhas mudam de uma rodada para outra: a temperatura é 0, mas a saída do modelo não é determinística. As falhas restantes vêm da interpretação da pergunta, não de erro de ferramenta. Nas rodadas 4 e 5 nenhuma resposta trouxe número sem consulta. A q17, que falhou na rodada 3, foi repetida via `POST /chat` e devolveu as 5 regiões com os valores do golden.
+### `POST /chat` real com a API em execução
+```
+$ bash /tmp/poc_start_api.sh     # carrega .env e sobe .venv/bin/uvicorn app.api.main:app --port 8000 em segundo plano
+{"status":"ok","gemini":"configured","gemini_model":"gemini-2.5-flash","postgres":"ok","duckdb":"ok","cosmos":"ok","catalog_version":"54c809efd410","etl_run_id":1}
+```
+"Qual foi o faturamento dos últimos 30 dias?": HTTP 200, turno `600707f9-...`
+```
+tool 1 search_concepts {"query":"faturamento"} ok
+tool 2 list_metrics {} ok
+tool 3 query_metric {"metric":"net_revenue","date_from":"2026-10-02","date_to":"2026-10-31"} ok  query_id b6f4e92f-...
+rows [{"value":"876344.70"}]
+ANSWER: ... a Receita Líquida foi de R$ 876.344,70. Escolhi a Receita Líquida (net_revenue) ... a Receita Bruta (gross_revenue) também está disponível.
+```
+"Qual região teve a maior receita?": HTTP 200, turno `7fceaf6b-...`
+```
+tool 1 search_concepts {"query":"receita"} ok
+tool 2 list_dimensions {"metric":"net_revenue"} ok
+tool 3 query_metric order_by.field="net_revenue" -> rejected invalid_order
+tool 4 query_metric order_by.field="net_revenue" -> rejected invalid_order
+tool 5 query_metric {"metric":"net_revenue","dimensions":["region"],"order_by":{"field":"metric","direction":"desc"},"limit":1} ok  query_id 5baeb133-...
+rows [{"region":"Sudeste","value":"13063627.23"}]
+ANSWER: A região com a maior receita foi a Sudeste, com R$ 13.063.627,23. ... utilizei a métrica net_revenue ...
+```
+"Explique como o faturamento líquido é calculado.": HTTP 200, turno `c3590d2e-...`
+```
+tool 1 explain_metric {"metric":"net_revenue"} ok
+ANSWER: ... Fórmula: gross_revenue - SUM(refunds.refund_amount WHERE refunds.status = 'completed') ... Filtro base: o.is_paid ...
+        pedidos 'paid' e 'refunded'; só reembolsos 'completed'; reembolso atribuído à data do pedido de origem.
+```
+SQL de referência independente (`scripts/compute_golden.py::_query`, PostgreSQL `oltp`, papel reader), executado na mesma sessão:
+```
+net_revenue 2026-10-02..2026-10-31: [{'value': '876344.70'}]                  igual à resposta do chat
+net_revenue por região (maior): {'region': 'Sudeste', 'value': '13063627.23'}  igual à resposta do chat
+```
+Persistência (`audit.chat_turn` LEFT JOIN `audit.query_audit` para os 3 turnos):
+```
+600707f9 status ok model gemini-2.5-flash episódio Cosmos sim  auditorias 3  com SQL 1  com evidência 1  decisões Cosmos 3
+7fceaf6b status ok model gemini-2.5-flash episódio Cosmos sim  auditorias 5  com SQL 1  com evidência 3  decisões Cosmos 5
+c3590d2e status ok model gemini-2.5-flash episódio Cosmos sim  auditorias 1  com SQL 0  com evidência 1  decisões Cosmos 1
+$ curl -X POST :8000/tools/show_sql -d '{"query_id":"b6f4e92f-..."}'
+{"metric":"net_revenue","sql":"SELECT COALESCE(SUM(i.line_total), 0) - COALESCE(SUM(rf.refund_amount), 0) AS \"value\" FROM fact_orders o ... WHERE o.is_paid AND o.order_date >= CAST(? AS DATE) ...
+$ curl :8000/evidence/b6f4e92f-...    -> HTTP 200
+$ curl :8000/evidence/5baeb133-...    -> HTTP 200 {"tool_name":"query_metric","metric":"net_revenue","dimensions":["region"],"filters":{"applied":[{"sql":"o.is_paid", ...
+```
+Também via `/chat`, "Qual foi a receita bruta por região em outubro de 2026?" devolveu Sudeste 552633.50, Nordeste 233193.70, Sul 211707.70, Centro-Oeste 87943.10 e Norte 71666.70, os valores de `gross_revenue.oct2026_by_region` no golden.
+
+O uvicorn foi encerrado ao final (`kill`; `pgrep uvicorn` sem resultado). `grep -c AIza` em `logs/*.log` e no log do uvicorn: 0.
+### Suíte padrão
+```
+$ GEMINI_API_KEY= make test
+271 passed, 14 deselected in 44.20s      (266 da Fase 6 + 5 testes do mapeamento 402/429)
+```
+### Não verificado
+- Estabilidade: nenhuma rodada ao vivo passou 14/14. As duas últimas tiveram 2 e 1 falhas (q15 crescimento, q16 agrupamento extra, uma resposta vazia).
+- Interface Streamlit com o Gemini real em navegador.
