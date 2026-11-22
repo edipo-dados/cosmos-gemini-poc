@@ -1,13 +1,14 @@
 """Mapeamento de erros do SDK google-genai e novas tentativas. Estes testes NÃO verificam o Gemini."""
 from __future__ import annotations
 
+import logging
 import pytest
 from google.genai import errors as genai_errors
 from google.genai import types
 
 from agent.gemini.client import GeminiClient, is_blocked
-from agent.gemini.errors import (GeminiAuthFailed, GeminiModelInvalid, GeminiNotConfigured, GeminiUnavailable,
-                                 map_error)
+from agent.gemini.errors import (GeminiAuthFailed, GeminiModelInvalid, GeminiNotConfigured, GeminiQuotaOrBilling,
+                                 GeminiUnavailable, map_error)
 from support.fake_gemini import ScriptedGemini, blocked, http_error, text
 
 Q = [types.Content(role="user", parts=[types.Part.from_text(text="oi")])]
@@ -21,7 +22,8 @@ def _err(cls, code, status):
     (_err(genai_errors.ClientError, 401, "UNAUTHENTICATED"), GeminiAuthFailed),
     (_err(genai_errors.ClientError, 403, "PERMISSION_DENIED"), GeminiAuthFailed),
     (_err(genai_errors.ClientError, 404, "NOT_FOUND"), GeminiModelInvalid),
-    (_err(genai_errors.ClientError, 429, "RESOURCE_EXHAUSTED"), GeminiUnavailable),
+    (_err(genai_errors.ClientError, 402, "PAYMENT_REQUIRED"), GeminiQuotaOrBilling),
+    (_err(genai_errors.ClientError, 429, "RESOURCE_EXHAUSTED"), GeminiQuotaOrBilling),
     (_err(genai_errors.ServerError, 500, "INTERNAL"), GeminiUnavailable),
     (_err(genai_errors.ServerError, 503, "UNAVAILABLE"), GeminiUnavailable),
 ])
@@ -30,7 +32,8 @@ def test_sdk_errors_map_to_stable_codes(exc, expected):
     assert type(mapped) is expected
     assert (mapped.code, mapped.http_status) == {
         GeminiAuthFailed: ("gemini_auth_failed", 503), GeminiModelInvalid: ("gemini_model_invalid", 503),
-        GeminiUnavailable: ("llm_unavailable", 502)}[expected]
+        GeminiUnavailable: ("llm_unavailable", 502),
+        GeminiQuotaOrBilling: ("llm_quota_or_billing", 503)}[expected]
 
 
 def test_400_invalid_api_key_is_auth_failure():
@@ -90,3 +93,29 @@ def test_blocked_response_detected():
     assert is_blocked(c.generate(Q)) is True
     fake.load(text("normal"))
     assert is_blocked(c.generate(Q)) is False
+
+def test_quota_billing_message_is_actionable_and_http_status_503():
+    mapped = map_error(_err(genai_errors.ClientError, 402, "PAYMENT_REQUIRED"))
+    assert mapped.http_status == 503 and "faturamento" in mapped.message and "402" in mapped.message
+def test_upstream_error_is_logged_with_code_status_message_and_key_redacted(monkeypatch, caplog):
+    key = "AIza" + "B" * 35
+    monkeypatch.setenv("GEMINI_API_KEY", "chave-falsa")
+    exc = genai_errors.ClientError(402, {"error": {"code": 402, "status": "PAYMENT_REQUIRED",
+                                                   "message": f"billing off chave-falsa {key}"}})
+    with caplog.at_level(logging.WARNING, logger="poc.gemini"):
+        map_error(exc)
+    text = caplog.text
+    assert "code=402" in text and "status=PAYMENT_REQUIRED" in text and "billing off" in text
+    assert "chave-falsa" not in text and key not in text
+def test_429_is_still_retried_before_mapping():
+    fake = ScriptedGemini().load(*[http_error(429, "RESOURCE_EXHAUSTED", "q")] * 3)
+    c, sleeps = _client(fake)
+    with pytest.raises(GeminiQuotaOrBilling):
+        c.generate(Q)
+    assert sleeps == [1.0, 2.0] and len(fake.requests) == 3
+def test_402_is_not_retried():
+    fake = ScriptedGemini().load(http_error(402, "PAYMENT_REQUIRED", "x"))
+    c, sleeps = _client(fake)
+    with pytest.raises(GeminiQuotaOrBilling):
+        c.generate(Q)
+    assert sleeps == [] and len(fake.requests) == 1
