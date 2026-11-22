@@ -177,6 +177,12 @@ def main() -> int:
                            [{"dimension": "region", "op": "eq", "value": "Sudeste"}], date_from="2026-09-01", date_to="2026-10-31", end=end))
         cases.append(_case(conn, "average_order_value.pix_by_category", "average_order_value", ["category"],
                            [{"dimension": "payment_method", "op": "eq", "value": "pix"}], end=end))
+        # perguntas exemplo da Fase 4 (tests/golden/questions.json): janelas relativas a DATA_END_DATE
+        cases.append(_case(conn, "net_revenue.last_30_days", "net_revenue", [],
+                           date_from=(end - timedelta(days=29)).isoformat(), date_to=end.isoformat(), end=end))
+        cases.append(_case(conn, "net_revenue.last_two_months_by_month", "net_revenue", ["month"],
+                           date_from=(end.replace(day=1) - timedelta(days=1)).replace(day=1).isoformat(),
+                           date_to=end.isoformat(), end=end))
         totals = {r[0]: r[1] for r in conn.execute(text("SELECT 'orders', count(*) FROM oltp.orders"))}
     pg.dispose()
     OUT.parent.mkdir(parents=True, exist_ok=True)

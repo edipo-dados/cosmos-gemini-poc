@@ -5826,6 +5826,45 @@
      "value": "257.2021359223301"
     }
    ]
+  },
+  {
+   "id": "net_revenue.last_30_days",
+   "request": {
+    "metric": "net_revenue",
+    "dimensions": [],
+    "filters": [],
+    "limit": 1000,
+    "date_from": "2026-10-02",
+    "date_to": "2026-10-31"
+   },
+   "rows": [
+    {
+     "value": "876344.70"
+    }
+   ]
+  },
+  {
+   "id": "net_revenue.last_two_months_by_month",
+   "request": {
+    "metric": "net_revenue",
+    "dimensions": [
+     "month"
+    ],
+    "filters": [],
+    "limit": 1000,
+    "date_from": "2026-09-01",
+    "date_to": "2026-10-31"
+   },
+   "rows": [
+    {
+     "month": "2026-09",
+     "value": "1271615.19"
+    },
+    {
+     "month": "2026-10",
+     "value": "963103.40"
+    }
+   ]
   }
  ]
 }

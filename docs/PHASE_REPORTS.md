@@ -241,3 +241,100 @@ Não verificado ou não feito:
 - `scripts/cosmos_world_init.sh` (container) não foi escrito; Docker indisponível.
 - Gemini: nada nesta fase depende dele.
 Nada foi commitado nesta etapa, conforme instrução.
+
+## Fase 4: Integração Gemini + FastAPI
+
+### O que foi entregue
+- `agent/gemini/`: cliente com o SDK oficial `google-genai` 3.6.1 (`genai.Client(api_key=...)`), `GenerateContentConfig` com temperatura 0, instrução de sistema em pt-BR, as 7 `FunctionDeclaration` e `AutomaticFunctionCallingConfig(disable=True)`. Novas tentativas para 429 e 5xx (esperas de 1 s e 2 s). Mapeamento de erros: 401/403 (e 400 "API key not valid") para `gemini_auth_failed` (503), 404 para `gemini_model_invalid` (503), demais para `llm_unavailable` (502). Resposta bloqueada vira `status: blocked`. Sem chave: `gemini_not_configured` (503).
+- `agent/gemini/declarations.py`: declarações geradas dos modelos Pydantic de `agent/tools/schemas.py` (`Schema.from_json_schema`). Nenhum parâmetro aceita SQL ou nome de tabela. `cosmos_open` e `cosmos_act` não são expostos.
+- `agent/orchestration/`: loop manual de Function Calling, com no máximo 6 rodadas de ferramentas (`incomplete` quando estoura) e histórico em memória de até 20 turnos por `session_id`. Cada pergunta abre um episódio no Cosmos com `idempotency_key=turn_id`. O fim leva o episódio a `COMPLETED`, ou a `FAILED` em erro, e grava `audit.chat_turn` de `started` para o status final.
+- `agent/tools/`: `ToolExecutor` (esquema → `new_attempt`/`authorize_effect` do `AuthorizationGateway` → domínio fora do lock → `ToolAdapter.execute` → auditoria em `finally`), `CosmosRuntime` (provider que lê os nós `capability` do grafo e nega tudo quando não consegue ler, handoff por `query_id`), `SemanticReader` (lê `.cosmos/graph.json` por caminho explícito; `explain_metric` via `tool_explain` do MCP do Cosmos).
+- `app/services/audit.py`: `audit.query_audit` e `audit.chat_turn` com o papel `poc_app`.
+- `app/api/`: FastAPI com endpoints `def` síncronos. `GET /health`, `POST /chat` e o alias `POST /ask`, `POST /tools/{name}`, `GET /evidence/{query_id}`, `GET /catalog/metrics`, `GET /catalog/dimensions`, `GET /catalog/glossary`. Limite de corpo de 16 KiB (413), `X-User-Id` validado, corpo de erro único `{"error":{"code","message"}}`.
+- `tests/golden/questions.json`: 19 perguntas em pt-BR, cobrindo as 7 perguntas exemplo do TASK, uma ambígua, uma métrica inexistente (`lucro`), uma dimensão não autorizada e uma tentativa de injeção. `scripts/compute_golden.py` ganhou 2 casos (últimos 30 dias e últimos dois meses), totalizando 63 casos em `expected.json`; os 61 anteriores ficaram idênticos.
+- `tests/support/fake_gemini.py`: transporte `httpx.MockTransport` passado ao SDK por `HttpOptions(httpx_client=...)`. O SDK real monta a requisição e interpreta a resposta; só a fronteira HTTP é falsa. `tests/support/serve_fake_gemini.py` sobe a mesma API em uvicorn com esse transporte.
+
+### Leitura da API instalada do `google-genai` (item 4.1)
+```
+$ .venv/bin/python -c "import google.genai as g; print(g.__version__)"
+3.6.1
+AutomaticFunctionCallingConfig fields: disable, maximum_remote_calls, ignore_call_history
+GenerateContentConfig: system_instruction, temperature, tools, tool_config, automatic_function_calling, safety_settings, ...
+FunctionDeclaration fields: description, name, parameters, parameters_json_schema, response, response_json_schema, behavior
+errors.APIError(code, response_json, response=None); ClientError e ServerError herdam de APIError
+HttpOptions: base_url, api_version, headers, timeout, retry_options, httpx_client, ...
+```
+Com um transporte falso, o SDK envia `POST https://generativelanguage.googleapis.com/v1/models/<modelo>:generateContent`, com a chave no cabeçalho `x-goog-api-key`, `tools[0].functionDeclarations`, `generationConfig.temperature = 0` e `toolConfig.functionCallingConfig.mode = AUTO`. Um 429 do servidor vira `ClientError` com `code=429`. Esse comportamento foi conferido em `tests/unit/test_gemini_declarations.py::test_sdk_serializes_declarations_on_the_wire`.
+
+### Decisões desta fase
+- Falha ao ler o grafo bloqueia antes de chegar ao `SemanticReader`. Com `graph.json` ilegível, o provider nega tudo e a resposta é 403 `tool_not_authorized`. `semantic_catalog_unavailable` (503) aparece quando o grafo é legível e não tem nós `poc.metric`. Os dois casos estão testados.
+- `explain_metric` confere a existência da métrica no YAML (fonte de verdade) e depois lê o grafo. Uma métrica que existe no YAML e falta no grafo dá 500 `internal_error`.
+- Uma chamada de ferramenta com nome desconhecido, vinda do modelo, volta ao modelo como `unknown_tool` e não gera linha de auditoria, como define a seção 6.1.
+- Em `/chat`, os erros `cosmos_runtime_unavailable`, `semantic_catalog_unavailable` e `audit_failed` encerram a pergunta (503/500). Os demais erros de ferramenta voltam ao modelo como resposta da função.
+
+### Execução por HTTP real (uvicorn)
+Roteiro descartável `/tmp/phase4_http_check.py`. Ele sobe dois processos uvicorn contra os bancos do projeto e o World do projeto, chama os endpoints com `curl` e encerra os dois:
+1. `GEMINI_API_KEY= .venv/bin/python -m uvicorn app.api.main:app --port 8000`
+2. `.venv/bin/python tests/support/serve_fake_gemini.py --port 8001`, com o SDK real e um transporte roteirizado que **não é o Gemini**.
+```
+$ curl http://127.0.0.1:8000/health
+HTTP 200 {"status":"ok","gemini":"not_configured","gemini_model":null,"postgres":"ok","duckdb":"ok","cosmos":"ok","catalog_version":"54c809efd410","etl_run_id":2}
+$ curl -X POST :8000/chat -d '{"question":"Qual foi o faturamento dos últimos 30 dias?"}'
+HTTP 503 {"error":{"code":"gemini_not_configured","message":"GEMINI_API_KEY não está definida no ambiente. O chat está indisponível; as ferramentas continuam acessíveis em POST /tools/{name}."}}
+$ curl -X POST :8000/ask ...                                  -> HTTP 503 gemini_not_configured
+$ curl :8000/catalog/metrics                                  -> HTTP 200 count 8 (fórmula, denominador, responsável, versão, regras)
+$ curl :8000/catalog/glossary                                 -> HTTP 200 count 18; "Receita": sinônimos Faturamento, Vendas...; maps_to gross_revenue e net_revenue
+$ curl :8000/catalog/dimensions                               -> HTTP 200 count 9
+$ curl -X POST :8000/tools/query_metric -d '{"metric":"net_revenue","date_from":"2026-10-02","date_to":"2026-10-31"}'
+HTTP 200 rows [{"value":"876344.70"}]   (golden net_revenue.last_30_days = 876344.70)
+$ curl -X POST :8000/tools/show_sql -d '{"query_id":"62060a1b-..."}'
+HTTP 200 "sql":"SELECT COALESCE(SUM(i.line_total), 0) - COALESCE(SUM(rf.refund_amount), 0) AS \"value\" FROM fact_orders o JOIN fact_order_items i ... WHERE o.is_paid AND o.order_date >= CAST(? AS DATE) AND o.order_date <= CAST(? AS DATE) LIMIT ?","params":["2026-10-02","2026-10-31",101]
+$ curl :8000/evidence/62060a1b-...
+HTTP 200 status ok, etl_run_id 2, catalog_version 54c809efd410, cosmos_episode_id run_5ddd43f5..., cosmos_decision_id authz_3f8239a7..., evidence {rules, filters_applied, source_tables, metric_version}
+$ curl -X POST :8000/tools/query_metric -d '{"metric":"active_customers","dimensions":["category"]}'
+HTTP 422 dimension_not_allowed, allowed_dimensions ["region","segment"]
+$ curl -X POST :8000/tools/execute_sql -d '{"sql":"DROP TABLE fact_orders"}'
+HTTP 404 unknown_tool
+
+$ curl :8001/health                                            -> "gemini":"configured","gemini_model":"scripted-model"
+$ curl -X POST :8001/chat -d '{"question":"Qual região teve a maior receita?","session_id":"demo-1"}'
+HTTP 200 "status":"ok","answer":"[roteiro falso, não é o Gemini] A região com maior receita líquida é Sudeste, com R$ 13063627.23 (métrica net_revenue, query_id f17eb739-...)."
+ tool_calls: list_metrics (rodada 1) -> query_metric net_revenue por região, desc, limit 1 (rodada 2) -> show_sql (rodada 3), todas ok
+ queries[0]: rows [{"region":"Sudeste","value":"13063627.23"}], sql "SELECT dr.region_name AS \"region\", ... ORDER BY \"value\" DESC NULLS LAST, \"region\" ASC LIMIT ?", sql_params [2],
+             source duckdb:analytics.duckdb, etl_run_id 2, rules {denominator, status_rule, time_basis}, cosmos_decision_id authz_68640a08...
+Chave falsa nos logs da API (logs/api.log): ausente. Chave do ambiente em logs/*.log e nos logs do uvicorn: ausente.
+```
+O valor 13063627.23 do Sudeste é igual ao do golden `net_revenue.by_region`, calculado por SQL independente no PostgreSQL.
+
+### Testes
+```
+$ make test            # .venv/bin/python -m pytest -m "not live_gemini" -q
+241 passed, 14 deselected in 55.94s      # 174 das fases 2 e 3 + 67 desta fase
+$ GEMINI_API_KEY= .venv/bin/python -m pytest -m live_gemini -q -rs
+SKIPPED [14] tests/live/test_live_gemini.py:32: GEMINI_API_KEY ausente
+14 skipped, 241 deselected
+```
+Novos arquivos e o que cobrem:
+- `unit/test_gemini_declarations.py` (5): são exatamente 7 `FunctionDeclaration`, iguais a `agent_capabilities.yaml`; nenhum parâmetro de SQL ou tabela; `automatic_function_calling.disable is True`; temperatura 0; o corpo HTTP que o SDK real serializa tem as 7 declarações e a instrução de sistema.
+- `unit/test_gemini_errors.py` (14): instâncias reais de `google.genai.errors.ClientError` e `ServerError` mapeadas (401, 403, 404, 429, 500, 503 e 400 de chave inválida); 429 e 5xx com novas tentativas de 1 s e 2 s; desistência após 2 novas tentativas; 401 e 404 sem nova tentativa; mensagem de erro sem a chave; resposta bloqueada detectada.
+- `integration/test_api.py` (12): `/health` sem Gemini; `/chat` e `/ask` sem chave devolvem 503; catálogo, dimensões e glossário; cada `/tools` grava `audit.query_audit` com `cosmos_decision_id` igual ao `decision_id` do evento `runtime.authorization.decision` no SQLite do Cosmos, com 1 decisão e 1 `runtime.adapter.result`, episódio `completed` e `pending` vazio; falha de esquema sem decisão e sem episódio; falha de domínio com 1 decisão e 1 resultado; códigos 400, 403, 404, 409, 413, 422, 500 e 503; usuário B não lê `query_id` de A; capacidade removida do grafo nega a ferramenta (1 decisão, 0 resultados) e a reposição volta a permitir; grafo ilegível nega tudo; grafo sem `poc.metric` dá 503; `/health` responde em menos de 1 s durante uma consulta de 1,5 s.
+- `integration/test_orchestration.py` (14), com o SDK real e o transporte roteirizado, **não é o Gemini**: loop `search_concepts → query_metric → show_sql → texto` com o número igual ao golden, 3 decisões e 3 resultados no Cosmos no mesmo episódio, `chat_turn` `ok` e episódio `completed`; o resultado de `query_metric` enviado ao modelo não contém SQL; histórico da sessão enviado na pergunta seguinte; `unknown_metric` e `dimension_not_allowed` voltam ao modelo; pergunta ambígua devolve as duas métricas; chamadas paralelas na mesma rodada; limite de 6 rodadas dá `incomplete`; resposta bloqueada; 401 e 404 dão 503 com `chat_turn` `error` e episódio `failed`; 503 repetido dá 502; teste de log em que o servidor devolve a chave na mensagem de erro e `logs/api.log` não a contém.
+- `integration/test_questions_golden.py` (21): 19 perguntas via `POST /tools/{name}`, comparadas com `expected.json` (tolerância 0 em dinheiro e contagens, 1e-9 em razões), seguidas de `show_sql` e `get_evidence` para o mesmo `query_id`. Erros esperados com HTTP 422, evidência `rejected` e `show_sql` 409. Depois da tentativa de injeção, `order_count` continua 20000. Esses testes validam os números do Query Engine, **não** a escolha de ferramenta do Gemini.
+- `live/test_live_gemini.py` (14, marcador `live_gemini`): as perguntas com número esperado, de ponta a ponta via `/chat` com o Gemini real. Ficam em skip sem `GEMINI_API_KEY`.
+
+### Critérios de aceite
+- **7** (respostas numéricas iguais às queries de referência): verificado por execução no nível do Query Engine e da API (19 perguntas e 63 casos golden).
+- **8** (SQL inspecionável): verificado por execução (`show_sql`, `queries[].sql` em `/chat`, `audit.query_audit.sql_text`).
+- **9** (evidências disponíveis): verificado por execução (`get_evidence`, `GET /evidence/{id}`, `cosmos_decision_id` conferido contra o SQLite do Cosmos).
+- **5** (Gemini conectado) e **6** (o agente descobre conceitos e consulta métricas): **implementado até a fronteira HTTP do SDK, não verificado ao vivo.**
+
+### O que NÃO foi verificado ao vivo
+- Nenhuma chamada ao Gemini real foi validada. Todos os testes de chat e o servidor da porta 8001 usam um transporte roteirizado, e as respostas desses testes foram escritas pelo roteiro, não pelo Gemini.
+- Não foi verificado que o Gemini real escolhe as ferramentas certas, preenche os argumentos certos, respeita a instrução de sistema ou responde em português. Também não foi verificado que o nome `gemini-2.5-flash` é aceito pela API.
+- Formato real de resposta bloqueada e de erros de autenticação: o mapeamento segue o formato de `google.genai.errors`, testado com respostas HTTP montadas à mão.
+- Divergência de ambiente: o enunciado diz que `GEMINI_API_KEY` não está definida, mas o shell e o `.env` têm um valor de 53 caracteres (não registrado aqui). Durante o desenvolvimento, uma chamada acidental de `/chat` com esse valor recebeu HTTP 402 do serviço e a API respondeu 502 `llm_unavailable`. Depois disso, toda execução usou `GEMINI_API_KEY=` ou chave falsa nos fixtures, e `pytest -m live_gemini` não foi rodado com o valor. Validar 5 e 6 exige rodar `pytest -m live_gemini` com uma chave válida.
+- Endpoints de leitura do plano 4.3 para o frontend (`/quality/*`, `/etl/runs`, `/audit/queries`, `/overview`) não foram feitos nesta etapa. O escopo pedido foi chat/ask, catálogo, glossário, health e evidência. Ficam para a Fase 5.
+- O 504 `query_timeout` pela API não tem teste próprio. O timeout real com `interrupt()` está provado no Query Engine (Fase 3), e a API só repassa o código pela tabela `HTTP_STATUS`.
+- Docker continua indisponível.
+
+Nada foi commitado nesta etapa, conforme instrução.

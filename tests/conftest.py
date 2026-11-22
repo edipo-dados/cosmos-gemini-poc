@@ -11,6 +11,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
+sys.path.insert(0, str(ROOT / "tests"))
 
 ROLES = ["ADMIN", "LOADER", "READER", "DQ", "APP"]
 
@@ -59,3 +60,46 @@ def pg_env(tmp_path_factory):
 @pytest.fixture(scope="session")
 def duckdb_path(pg_env) -> Path:
     return pg_env.duckdb_file
+
+
+FAKE_GEMINI_KEY = "fake-key-for-scripted-transport-0000000000"
+
+
+@pytest.fixture(scope="session")
+def cosmos_world(tmp_path_factory) -> Path:
+    """World real do Cosmos, descartável, com o catálogo sincronizado (o World do projeto não é tocado)."""
+    from support.cosmos_world import make_synced_world
+    return make_synced_world(tmp_path_factory.mktemp("cosmos") / "world")
+
+
+@pytest.fixture(scope="session")
+def api_settings(pg_env, cosmos_world):
+    """Settings da API sem chave Gemini (independe do ambiente do shell)."""
+    from pydantic import SecretStr
+    return pg_env.model_copy(update={"cosmos_world_dir": str(cosmos_world), "gemini_api_key": SecretStr("")})
+
+
+@pytest.fixture(scope="session")
+def client(api_settings):
+    """API real (bancos e Cosmos reais), sem Gemini configurado."""
+    from fastapi.testclient import TestClient
+    from app.api.main import create_app
+    with TestClient(create_app(api_settings)) as c:
+        yield c
+
+
+@pytest.fixture(scope="session")
+def fake_gemini():
+    from support.fake_gemini import ScriptedGemini
+    return ScriptedGemini()
+
+
+@pytest.fixture(scope="session")
+def chat_client(api_settings, fake_gemini):
+    """API real com o SDK google-genai real; só o transporte HTTP do SDK é um roteiro falso (não é o Gemini)."""
+    from fastapi.testclient import TestClient
+    from pydantic import SecretStr
+    from app.api.main import create_app
+    settings = api_settings.model_copy(update={"gemini_api_key": SecretStr(FAKE_GEMINI_KEY), "gemini_model": "scripted-model"})
+    with TestClient(create_app(settings, gemini_http_options=fake_gemini.http_options())) as c:
+        yield c
